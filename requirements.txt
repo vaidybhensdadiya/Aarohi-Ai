@@ -1,0 +1,22 @@
+# Aarohi AI - Python Dependencies
+# Install with: pip install -r requirements.txt
+
+# Flask web framework
+Flask==3.0.0
+
+# MySQL database connector
+PyMySQL==1.1.0
+
+# JWT authentication (for future use)
+PyJWT==2.8.0
+
+# Environment variables management
+python-dotenv==1.0.0
+
+# CORS support (if needed for frontend)
+Flask-CORS==4.0.0
+
+Werkzeug==3.0.0
+
+# Google Gemini API
+google-generativeai>=0.3.0

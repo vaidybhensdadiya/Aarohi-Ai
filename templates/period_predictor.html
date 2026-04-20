@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Period Predictor - Aarohi AI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="period-predictor-card card" style="margin: 2rem auto;">
+    <h3>Period Predictor</h3>
+    <p class="period-predictor-intro">Track your cycle and get a supportive prediction for your next period.</p>
+
+    <form id="periodPredictorForm" class="period-predictor-form">
+        <div class="form-group">
+            <label class="form-label" for="last_period_start_date">Last Period Start Date</label>
+            <input type="date" id="last_period_start_date" name="last_period_start_date" class="form-input" required>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="cycle_length">Cycle Length (24–35 days)</label>
+            <input type="number" id="cycle_length" name="cycle_length" class="form-input" min="24" max="35"
+                placeholder="28" required>
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="period_duration">Period Duration (days)</label>
+            <input type="number" id="period_duration" name="period_duration" class="form-input" min="1" max="10"
+                placeholder="5" required>
+        </div>
+        <div class="form-group checkbox-group">
+            <span class="form-label">Symptoms</span>
+            <label class="checkbox-label"><input type="checkbox" id="cramps" name="cramps"> Cramps</label>
+            <label class="checkbox-label"><input type="checkbox" id="mood_swings" name="mood_swings"> Mood
+                Swings</label>
+            <label class="checkbox-label"><input type="checkbox" id="headache" name="headache"> Headache</label>
+            <label class="checkbox-label"><input type="checkbox" id="fatigue" name="fatigue"> Fatigue</label>
+            <label class="checkbox-label"><input type="checkbox" id="bloating" name="bloating"> Bloating</label>
+        </div>
+        <button type="submit" class="btn btn-primary" id="predictBtn">Predict Period</button>
+    </form>
+
+    <div id="predictionResult" class="prediction-result" style="display: none;"></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+<script>
+    requireAuth();
+    loadUserInfo();
+    document.getElementById('logoutLink').addEventListener('click', handleLogout);
+
+    document.getElementById('periodPredictorForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const last_period_start_date = document.getElementById('last_period_start_date').value;
+        const cycle_length = parseInt(document.getElementById('cycle_length').value, 10);
+        const period_duration = parseInt(document.getElementById('period_duration').value, 10);
+        const cramps = document.getElementById('cramps').checked ? 1 : 0;
+        const mood_swings = document.getElementById('mood_swings').checked ? 1 : 0;
+        const headache = document.getElementById('headache').checked ? 1 : 0;
+        const fatigue = document.getElementById('fatigue').checked ? 1 : 0;
+        const bloating = document.getElementById('bloating').checked ? 1 : 0;
+
+        const resultEl = document.getElementById('predictionResult');
+        const btn = document.getElementById('predictBtn');
+        resultEl.style.display = 'none';
+        resultEl.className = 'prediction-result';
+        btn.disabled = true;
+
+        try {
+            const token = localStorage.getItem('aarohi_token');
+            const res = await fetch('/api/predict-period', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token ? 'Bearer ' + token : ''
+                },
+                body: JSON.stringify({
+                    last_period_start_date,
+                    cycle_length,
+                    period_duration,
+                    cramps,
+                    mood_swings,
+                    headache,
+                    fatigue,
+                    bloating
+                })
+            });
+            const data = await res.json();
+
+            resultEl.style.display = 'block';
+
+            if (!res.ok) {
+                resultEl.innerHTML = '<span class="error-msg">' + (data.error || 'Prediction failed. Please try again.') + '</span>';
+                resultEl.classList.add('error');
+                return;
+            }
+
+            const dateStr = data.predicted_next_start_date || data.next_period_date;
+            if (dateStr) {
+                const d = new Date(dateStr + 'T00:00:00');
+                const formatted = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+                resultEl.innerHTML = '🌸 Your next period is expected on <strong>' + formatted + '</strong>.<br>You\'re doing amazing — listen to your body and take gentle care of yourself 💖';
+                resultEl.classList.add('success');
+            } else {
+                resultEl.innerHTML = '<span class="error-msg">No predicted date in response.</span>';
+                resultEl.classList.add('error');
+            }
+        } catch (err) {
+            resultEl.style.display = 'block';
+            resultEl.innerHTML = '<span class="error-msg">Network error. Please check your connection and try again.</span>';
+            resultEl.classList.add('error');
+        } finally {
+            btn.disabled = false;
+        }
+    });
+</script>
+{% endblock %}

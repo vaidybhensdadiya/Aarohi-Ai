@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Chatbot - Aarohi AI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Aarohi AI</h2>
+            <span class="user-name" id="userName">User</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('dashboard_page') }}" class="sidebar-link active">
+                <span class="sidebar-icon">💬</span> Chatbot
+            </a>
+            <a href="{{ url_for('period_predictor_page') }}" class="sidebar-link">
+                <span class="sidebar-icon">📅</span> Period Predictor
+            </a>
+            
+            <a href="{{ url_for('dashboard_page') }}" class="sidebar-link">
+                <span class="sidebar-icon">📋</span> Schemes
+            </a>
+            <a href="{{ url_for('dashboard_page') }}" class="sidebar-link">
+                <span class="sidebar-icon">🏥</span> Clinics
+            </a>
+            <a href="{{ url_for('login_page') }}" id="logoutLink" class="sidebar-link logout">
+                <span class="sidebar-icon">🚪</span> Logout
+            </a>
+        </nav>
+    </aside>
+    <main class="chat-main">
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-welcome" id="chatWelcome">
+                    <p>Hi! I'm Aarohi AI. Ask me anything about women's health. I can respond in English, Hindi, or Gujarati.</p>
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <form id="chatForm" class="chat-form">
+                    <input type="text" id="chatInput" class="chat-input" placeholder="Type your message..." autocomplete="off">
+                    <button type="submit" class="chat-send-btn" id="chatSendBtn">Send</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+<template id="loaderTemplate">
+    <div class="message bot-message">
+        <div class="message-bubble loader-bubble">
+            <span class="loader-dot"></span>
+            <span class="loader-dot"></span>
+            <span class="loader-dot"></span>
+        </div>
+    </div>
+</template>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+<script>
+    requireAuth();
+    loadUserInfo();
+    document.getElementById('logoutLink').addEventListener('click', handleLogout);
+    initChatbot();
+</script>
+{% endblock %}

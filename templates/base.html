@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Aarohi AI{% endblock %}</title>
+
+    <!-- Global theme stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <!-- Navigation Bar (Top) -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>Aarohi AI</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/" class="nav-link">Home</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    {% if not hide_sidebar %}
+    <div class="dashboard-layout">
+        <!-- Unified Sidebar Navbar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Aarohi AI</h2>
+                <span class="user-name" id="userName">User</span>
+            </div>
+            <nav class="sidebar-nav">
+                <!-- Use JS or standard routing logic to highlight current active route if needed, 
+                     but defaulting to these links. -->
+                <a href="{{ url_for('dashboard_page') }}" class="sidebar-link">
+                    <span class="sidebar-icon">💬</span> Chatbot
+                </a>
+                <a href="{{ url_for('period_predictor_page') }}" class="sidebar-link">
+                    <span class="sidebar-icon">📅</span> Period Predictor
+                </a>
+                <a href="{{ url_for('schemes.schemes_page') }}" class="sidebar-link">
+                    <span class="sidebar-icon">📋</span> Schemes
+                </a>
+                <a href="{{ url_for('clinics.clinics_page') }}" class="sidebar-link">
+                    <span class="sidebar-icon">🏥</span> Clinics
+                </a>
+                <a href="{{ url_for('ecommerce.store_home') }}" class="sidebar-link">
+                    <span class="sidebar-icon">🛍</span> Ecommerce
+                </a>
+                <a href="{{ url_for('login_page') }}" id="logoutLink" class="sidebar-link logout">
+                    <span class="sidebar-icon">🚪</span> Logout
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Wrapper for sidebar pages -->
+        <main class="dashboard-main" style="padding: 0; background: transparent; overflow-y: auto; width: 100%;">
+            {% else %}
+            <!-- Main Content Area for non-sidebar pages (login/register) -->
+            <main class="main-content">
+                {% endif %}
+
+                {% block content %}{% endblock %}
+
+                {% if not hide_sidebar %}
+            </main>
+    </div>
+    {% else %}
+    </main>
+    {% endif %}
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <p>&copy; 2024 Aarohi AI. Empowering women's health and wellness.</p>
+        </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

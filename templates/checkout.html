@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block title %}Checkout - Aarohi AI{% endblock %}
+
+{% block extra_css %}
+<style>
+    .store-layout {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 3rem 1rem;
+    }
+
+    .checkout-panel {
+        background: #fff;
+        padding: 3rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    }
+
+    .success-icon {
+        font-size: 5rem;
+        color: #27ae60;
+        text-align: center;
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    .checkout-panel h2 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 2rem;
+    }
+
+    .summary-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 2rem 0;
+        border-top: 1px solid #eee;
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 1rem 0;
+        border-bottom: 1px solid #eee;
+        color: #555;
+    }
+
+    .summary-total {
+        display: flex;
+        justify-content: space-between;
+        padding: 1.5rem 0;
+        font-size: 1.4rem;
+        font-weight: bold;
+        color: #e74c3c;
+    }
+
+    .btn-pay {
+        display: block;
+        width: 100%;
+        background-color: #f1c40f;
+        color: #333;
+        border: none;
+        padding: 1.2rem;
+        border-radius: 8px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        cursor: pointer;
+        text-align: center;
+        transition: background-color 0.2s;
+    }
+
+    .btn-pay:hover {
+        background-color: #f39c12;
+    }
+
+    .btn-continue {
+        display: inline-block;
+        background-color: #3498db;
+        color: #fff;
+        padding: 1rem 2rem;
+        border-radius: 25px;
+        text-decoration: none;
+        font-weight: bold;
+        margin-top: 2rem;
+        text-align: center;
+    }
+
+    .center-text {
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="store-layout">
+    <div class="checkout-panel">
+
+        {% if success %}
+        <div class="center-text">
+            <span class="success-icon">✓</span>
+            <h2>Order Placed Successfully!</h2>
+            <p style="color: #7f8c8d; font-size: 1.1rem; line-height: 1.6;">
+                Thank you for shopping with Aarohi AI.<br>
+                Your items are being expertly prepared and will ship soon.
+            </p>
+            {% if payment_method == 'online' %}
+            <div
+                style="background: #e8f8f5; border: 1px solid #27ae60; color: #27ae60; padding: 1rem; border-radius: 8px; margin: 1.5rem auto; max-width: 400px; font-weight: 600;">
+                Online Payment Successful. Receipt sent to your email.
+            </div>
+            {% elif payment_method == 'offline' %}
+            <div
+                style="background: #fef9e7; border: 1px solid #f1c40f; color: #d35400; padding: 1rem; border-radius: 8px; margin: 1.5rem auto; max-width: 400px; font-weight: 600;">
+                Cash on Delivery Selected. Please keep cash ready at the time of delivery.
+            </div>
+            {% endif %}
+            <a href="{{ url_for('ecommerce.store_home') }}" class="btn-continue">Return to Store</a>
+        </div>
+        {% else %}
+
+        <h2>Review Your Order</h2>
+        <ul class="summary-list">
+            {% for item in cart_items %}
+            <li class="summary-item">
+                <span>{{ item.quantity }}x {{ item.product_name }}</span>
+                <span>${{ "%.2f"|format(item.subtotal) }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        <div class="summary-total">
+            <span>Order Total</span>
+            <span>${{ "%.2f"|format(cart_total) }}</span>
+        </div>
+
+        <form action="{{ url_for('ecommerce.place_order') }}" method="POST" class="checkout-form">
+            <div style="margin-top: 2rem; border-top: 1px solid #eee; padding-top: 1.5rem;">
+                <h3 style="margin-bottom: 1rem; color: #2c3e50;">Shipping Address</h3>
+                <textarea name="address" rows="3" required placeholder="Enter your full shipping address here..."
+                    style="width: 100%; padding: 0.8rem; border: 1px solid #ced4da; border-radius: 6px; font-family: inherit; font-size: 1rem; margin-bottom: 2rem; resize: vertical;"></textarea>
+
+                <h3 style="margin-bottom: 1rem; color: #2c3e50;">Payment Method</h3>
+                <div style="display: flex; gap: 2rem; margin-bottom: 2rem;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="radio" name="payment_method" value="online" required checked>
+                        <span>Online Payment (Card/UPI)</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input type="radio" name="payment_method" value="offline" required>
+                        <span>Cash on Delivery (Offline)</span>
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-pay">Place Order Now & Pay</button>
+        </form>
+
+        <div style="text-align: center; margin-top: 1rem;">
+            <a href="{{ url_for('ecommerce.cart_page') }}" style="color: #7f8c8d; text-decoration: none;">←
+                Return to Cart</a>
+        </div>
+
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+<script>
+    requireAuth();
+    loadUserInfo();
+    document.getElementById('logoutLink').addEventListener('click', handleLogout);
+</script>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% set hide_sidebar = True %}
+{% block title %}Register - Aarohi AI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card card">
+        <h2 class="auth-title">Create account</h2>
+        <p class="auth-subtitle">Join Aarohi AI</p>
+
+        <form id="registerForm" class="auth-form">
+            <div class="form-group">
+                <label class="form-label" for="name">Name</label>
+                <input type="text" id="name" name="name" class="form-input" placeholder="Your name" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="email_id">Email</label>
+                <input type="email" id="email_id" name="email_id" class="form-input" placeholder="your@email.com"
+                    required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="age">Age</label>
+                <input type="number" id="age" name="age" class="form-input" placeholder="25" min="1" max="150" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="password">Password</label>
+                <input type="password" id="password" name="password" class="form-input" placeholder="••••••••"
+                    minlength="6" required>
+            </div>
+            <div id="registerError" class="form-error" style="display:none;"></div>
+            <button type="submit" class="btn btn-primary btn-full">Register</button>
+        </form>
+
+        <p class="auth-footer">
+            Already have an account? <a href="{{ url_for('login_page') }}">Login</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+<script>
+    document.getElementById('registerForm').addEventListener('submit', handleRegister);
+</script>
+{% endblock %}

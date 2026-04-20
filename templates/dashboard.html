@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Aarohi AI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="chat-main" style="height: 100vh;">
+    <div class="chat-container">
+        <div class="chat-messages" id="chatMessages">
+            <div class="chat-welcome" id="chatWelcome">
+                <p>Hi! I'm Aarohi AI. Ask me anything about women's health. I can respond in English, Hindi, or
+                    Gujarati.</p>
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <form id="chatForm" class="chat-form">
+                <input type="text" id="chatInput" class="chat-input" placeholder="Type your message..."
+                    autocomplete="off">
+                <button type="submit" class="chat-send-btn" id="chatSendBtn">Send</button>
+            </form>
+        </div>
+    </div>
+</div>
+<template id="loaderTemplate">
+    <div class="message bot-message">
+        <div class="message-bubble loader-bubble">
+            <span class="loader-dot"></span>
+            <span class="loader-dot"></span>
+            <span class="loader-dot"></span>
+        </div>
+    </div>
+</template>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+<script>
+    requireAuth();
+    loadUserInfo();
+    document.getElementById('logoutLink').addEventListener('click', handleLogout);
+    initChatbot();
+</script>
+{% endblock %}

@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+{% block title %}{{ product.product_name }} - Aarohi AI{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Basic Layout matching store style */
+    .store-layout {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        background-color: #fcfcfc;
+    }
+
+    .breadcrumb {
+        margin-bottom: 2rem;
+        font-size: 0.95rem;
+    }
+
+    .breadcrumb a {
+        color: #3498db;
+        text-decoration: none;
+    }
+
+    .breadcrumb a:hover {
+        text-decoration: underline;
+    }
+
+    .breadcrumb span {
+        color: #7f8c8d;
+        margin: 0 0.5rem;
+    }
+
+    /* Product Detail Area */
+    .product-detail-container {
+        display: flex;
+        gap: 3rem;
+        background: #fff;
+        padding: 2.5rem;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.04);
+    }
+
+    .product-image-large {
+        flex: 1;
+        max-width: 500px;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .product-image-large img {
+        width: 100%;
+        height: auto;
+        display: block;
+        transition: transform 0.3s ease;
+    }
+
+    .product-info-panel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-title {
+        font-size: 2.2rem;
+        color: #2c3e50;
+        margin: 0 0 0.5rem 0;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    .product-category {
+        color: #e67e22;
+        text-transform: uppercase;
+        font-weight: 600;
+        font-size: 0.9rem;
+        letter-spacing: 1px;
+        margin-bottom: 1.5rem;
+    }
+
+    .product-price {
+        font-size: 2.5rem;
+        color: #e74c3c;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .product-stock {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .stock-in {
+        color: #27ae60;
+    }
+
+    .stock-out {
+        color: #c0392b;
+    }
+
+    .product-description {
+        font-size: 1.1rem;
+        color: #555;
+        line-height: 1.6;
+        margin-bottom: 2.5rem;
+        border-top: 1px solid #f0f0f0;
+        padding-top: 1.5rem;
+    }
+
+    .buy-box {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 10px;
+        border: 1px solid #e9ecef;
+    }
+
+    .quantity-selector {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .quantity-selector label {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .quantity-selector select {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        border: 1px solid #ced4da;
+        font-size: 1rem;
+    }
+
+    .btn-add-large {
+        width: 100%;
+        background-color: #f1c40f;
+        color: #333;
+        border: none;
+        padding: 1rem;
+        border-radius: 25px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.2s, transform 0.1s;
+        box-shadow: 0 4px 10px rgba(241, 196, 15, 0.3);
+    }
+
+    .btn-add-large:hover {
+        background-color: #f39c12;
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+        .product-detail-container {
+            flex-direction: column;
+        }
+
+        .product-image-large {
+            max-width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="store-layout">
+
+    <div class="breadcrumb">
+        <a href="{{ url_for('ecommerce.store_home') }}">Store</a>
+        <span>›</span>
+        <a href="{{ url_for('ecommerce.store_home', category=product.category) }}">{{ product.category }}</a>
+        <span>›</span>
+        {{ product.product_name }}
+    </div>
+
+    <div class="product-detail-container">
+        <div class="product-image-large">
+            <img src="{{ product.image_url }}" alt="{{ product.product_name }}">
+        </div>
+
+        <div class="product-info-panel">
+            <h1 class="product-title">{{ product.product_name }}</h1>
+            <div class="product-category">{{ product.category }}</div>
+
+            <div class="product-price">${{ "%.2f"|format(product.price) }}</div>
+
+            <div class="product-stock {{ 'stock-in' if product.stock_quantity > 0 else 'stock-out' }}">
+                {% if product.stock_quantity > 0 %}
+                <span class="stock-icon">✓</span> In Stock
+                {% else %}
+                <span class="stock-icon">✗</span> Out of Stock
+                {% endif %}
+            </div>
+
+            <div class="product-description">
+                {{ product.description }}
+            </div>
+
+            <div class="buy-box">
+                <form action="{{ url_for('ecommerce.add_to_cart', product_id=product.id) }}" method="POST">
+                    <div class="quantity-selector">
+                        <label for="quantity">Quantity:</label>
+                        <select name="quantity" id="quantity" {% if product.stock_quantity==0 %}disabled{% endif %}>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-add-large" {% if product.stock_quantity==0 %}disabled
+                        style="background:#ccc; cursor:not-allowed;" {% endif %}>
+                        🛒 Add to Cart
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+<script>
+    requireAuth();
+    loadUserInfo();
+    document.getElementById('logoutLink').addEventListener('click', handleLogout);
+</script>
+{% endblock %}
