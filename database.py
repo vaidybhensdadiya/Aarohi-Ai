@@ -4,15 +4,13 @@ from config import Config
 
 def get_db_connection():
     try:
-        conn = pymysql.connect(
-            host=Config.DB_HOST,
-            user=Config.DB_USER,
-            password=Config.DB_PASSWORD,
-            database=Config.DB_NAME,
-            port=Config.DB_PORT,
-            cursorclass=pymysql.cursors.DictCursor,
-            autocommit=True
-        )
+        host=os.getenv('DB_HOST'), 
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        database=os.getenv('DB_NAME'),
+        cursorclass=pymysql.cursors.DictCursor,
+            
+        
         return conn
     except Exception as e:
         print("❌ DB CONNECTION ERROR (database.py):", e)
