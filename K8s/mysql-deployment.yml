@@ -16,8 +16,37 @@ spec:
       containers:
       - name: mysql
         image: mysql:8.0
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        # --- Database Engine Probes Added ---
+        readinessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+            - -h
+            - localhost
+          initialDelaySeconds: 15 # Gives the database subsystem time to run initialization migrations
+          periodSeconds: 5
+          timeoutSeconds: 2
+          failureThreshold: 3
+        livenessProbe:
+          exec:
+            command:
+            - mysqladmin
+            - ping
+            - -h
+            - localhost
+          initialDelaySeconds: 30 # Gives extra buffer room before enforcing cold restarts
+          periodSeconds: 10
+          timeoutSeconds: 2
+          failureThreshold: 3
         env:
-        # --- Public Info from ConfigMap ---
         - name: MYSQL_DATABASE
           valueFrom:
             configMapKeyRef:
@@ -28,7 +57,6 @@ spec:
             configMapKeyRef:
               name: app-config
               key: DB_USER
-        # --- Sensitive Info from Secret ---
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -48,4 +76,5 @@ spec:
       - name: mysql-persistent-storage
         persistentVolumeClaim:
           claimName: mysql-pvc
+
 

@@ -17,10 +17,33 @@ spec:
       - name: web-app
         image: coder122/aarohi-ai-web-app:v2
         imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "384Mi"
+            cpu: "300m"
+        # --- Health Probes Added ---
+        readinessProbe:
+          httpGet:
+            path: /login       # Checks a native endpoint to confirm asset processing is live
+            port: 5000
+          initialDelaySeconds: 10 # Gives Flask time to spin up and load ML libraries
+          periodSeconds: 5        # Check frequency
+          timeoutSeconds: 2       # Must respond within 2 seconds
+          failureThreshold: 3     # Drops from service pool after 3 straight failures
+        livenessProbe:
+          httpGet:
+            path: /login
+            port: 5000
+          initialDelaySeconds: 15 # Waits slightly longer than readiness to allow stable boot
+          periodSeconds: 10
+          timeoutSeconds: 2
+          failureThreshold: 3     # Restarts the container after 3 straight failures
         ports:
         - containerPort: 5000
         env:
-        # --- Configuration Settings ---
         - name: DB_HOST
           valueFrom:
             configMapKeyRef:
@@ -41,7 +64,6 @@ spec:
             configMapKeyRef:
               name: app-config
               key: DB_USER
-        # --- Secret Token ---
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
