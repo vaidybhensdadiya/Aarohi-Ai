@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deployment
+  namespace: aarohi-ai
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: aarohi-web
+  template:
+    metadata:
+      labels:
+        app: aarohi-web
+    spec:
+      containers:
+      - name: web-app
+        image: coder122/aarohi-ai-web-app:v2
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+        env:
+        # --- Configuration Settings ---
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: DB_HOST
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: DB_PORT
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: DB_NAME
+        - name: DB_USER
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: DB_USER
+        # --- Secret Token ---
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secrets
+              key: mysql-password
+
