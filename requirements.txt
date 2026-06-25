@@ -19,7 +19,7 @@ google-genai==1.62.0
 
 # Machine Learning
 numpy==2.2.6
- (Step one done Containerizing Aarohi-Ai)
+
 pandas==3.0.0
 scikit-learn==1.8.0
 scipy==1.17.0
@@ -28,8 +28,5 @@ threadpoolctl==3.6.0
 
 # Utilities
 requests==2.32.5
-<<<<<<< HEAD
+
 python-dateutil==2.9.0.post0
-=======
-python-dateutil==2.9.0.post0
->>>>>>> 2d38c88 (Step one done Containerizing Aarohi-Ai)
