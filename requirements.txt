@@ -9,7 +9,7 @@ Flask-Cors==4.0.0
 PyMySQL==1.1.0
 
 # Authentication
-PyJWT==2.8.0
+PyJWT[crypto]>=2.13.0
 
 # Environment Variables
 python-dotenv==1.0.0
@@ -19,7 +19,6 @@ google-genai==1.62.0
 
 # Machine Learning
 numpy==2.2.6
-<<<<<<< HEAD
 pandas==3.0.0
 scikit-learn==1.8.0
 scipy==1.17.0
@@ -28,16 +27,5 @@ threadpoolctl==3.6.0
 
 # Utilities
 requests==2.32.5
-=======
-
-pandas==3.0.0
-scikit-learn==1.8.0
-scipy==1.17.0
-joblib==1.5.3
-threadpoolctl==3.6.0
-
-# Utilities
-requests==2.32.5
-
->>>>>>> origin/main
 python-dateutil==2.9.0.post0
+
