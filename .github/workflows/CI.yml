@@ -1,1 +1,129 @@
 # CI Pipeline is here 
+name: Aarohi AI DevSecOps Pipeline
+
+on:
+  push:
+    branches: [ "" ]
+  pull_request:
+    branches: [ "" ]
+
+permissions:
+  contents: read
+  id-token: write # Required for secure AWS OIDC authentication
+
+jobs:
+  security-and-testing:
+    name: Code Security & Testing (Shift-Left)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code Base
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required for Gitleaks to inspect entire commit history
+
+      # -------------------------------------------------------------
+      # SEC 1: GITLEAKS (Secret Scanner)
+      # -------------------------------------------------------------
+      - name: Run Gitleaks Secret Audit
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # -------------------------------------------------------------
+      # SEC 2: BANDIT (Python Static Analysis)
+      # -------------------------------------------------------------
+      - name: Set up Python Runtime
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          
+      - name: Install Linting & Testing Dependencies
+        run: |
+          pip install bandit semgrep
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      # 0.1.1: Fixes vulnerabilities, misconfigurations, and standard bugs
+      - name: Run Bandit Security Analysis
+        run: bandit -r . -x ./testing -ll
+
+      # -------------------------------------------------------------
+      # SEC 3: SEMGREP (SAST Analysis)
+      # -------------------------------------------------------------
+      - name: Run Semgrep Code Audit
+        run: semgrep scan --config=auto --error
+
+  build-and-container-security:
+    name: Container Build & Supply Chain Shielding
+    needs: security-and-testing # Blocks build if early code scans fail
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code Base
+        uses: actions/checkout@v4
+
+      # Install Cosign for Cryptographic Container Signing
+      - name: Install Cosign CLI Engine
+        uses: sigstore/cosign-installer@v3.5.0
+
+      # Authenticate securely with AWS APIs using GitHub runner variables
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Log in to Amazon ECR Private Registry
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # -------------------------------------------------------------
+      # DOCKER BUILD & TRIVY VULNERABILITY CONTAINER SCAN
+      # -------------------------------------------------------------
+      - name: Build Local Container Image Blueprint
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: aarohi-ai-web-app
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+
+      - name: Run Trivy Container Vulnerability Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ steps.login-ecr.outputs.registry }}/aarohi-ai-web-app:${{ github.sha }}
+          format: 'table'
+          exit-code: '1' # Crashes and blocks the pipeline if HIGH or CRITICAL issues are discovered
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+      # -------------------------------------------------------------
+      # PUSH TO ECR & SUPPLY CHAIN PROVENANCE
+      # -------------------------------------------------------------
+      - name: Push Secure Verified Container Images to ECR
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: aarohi-ai-web-app
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+      # SEC 4: SYFT (Generate Software Bill of Materials - SBOM)
+      - name: Generate SBOM Report via Syft
+        uses: anchore/sbom-action@v0
+        with:
+          image: ${{ steps.login-ecr.outputs.registry }}/aarohi-ai-web-app:${{ github.sha }}
+          output-format: 'spdx-json'
+          artifact-name: sbom.spdx.json
+
+      # SEC 5: COSIGN (Sign Container Image Proof)
+      - name: Sign the Published Container Registry Image
+        env:
+          COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
+          DIGEST: ${{ steps.login-ecr.outputs.registry }}/aarohi-ai-web-app@${{ github.sha }}
+        run: |
+          echo "$COSIGN_PRIVATE_KEY" > cosign.key
+          cosign sign --key cosign.key ${{ steps.login-ecr.outputs.registry }}/aarohi-ai-web-app:${{ github.sha }} -y
