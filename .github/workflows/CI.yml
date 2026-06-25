@@ -3,9 +3,9 @@ name: Aarohi AI DevSecOps Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "KrishV" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "KrishV" ]
 
 permissions:
   contents: read
