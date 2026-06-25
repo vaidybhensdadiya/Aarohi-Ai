@@ -1,37 +1,72 @@
-# Python
+# ====================================================================
+# 🛡️ SECURITY & SENSITIVE SECRETS (Never Commit to Git)
+# ====================================================================
+# Kubernetes Raw Credentials & Private Keys
+*.key
+*.pem
+*.pub
+cosign.key
+cosign.pub
+
+# Local Kubernetes Secrets / ConfigMaps
+K8s/secrets.yml
+K8s/configmap.yml
+secrets.yaml
+configmap.yaml
+
+# Environment files containing live system access strings
+.env
+.env.*
+*.env
+
+# ====================================================================
+# 🏗️ TERRAFORM STATE & COMPILATION ARTIFACTS
+# ====================================================================
+# Local hidden tracking directories
+.terraform/
+terraform/.terraform/
+*.zip
+
+.terraform.*
+
+# Local tracking state files (Contains raw AWS resource IDs and meta passwords)
+*.tfstate
+*.tfstate.*
+
+# Crash logs and runtime lock overrides
+crash.log
+*.tfvars
+*.tfvars.json
+.terraform.lock.hcl
+
+# ====================================================================
+# 🐍 PYTHON RUNTIME & DEPENDENCY BUILD ARTIFACTS
+# ====================================================================
+# Compiled python byte code caches
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
 
-# Virtual Environment
+# Virtual environments wrappers
 venv/
-env/
 .venv/
+env/
+ENV/
+*.venv
 
-# Environment variables
-.env
-.env
+# ML model weights caches / local checkpoints
+.pytest_cache/
+.ipynb_checkpoints/
+*.h5
+*.pkl
+*.onnx
 
-# Database
-*.db
-*.sqlite3
-
-# Logs
+# ====================================================================
+# 🍏 SYSTEM & IDE OVERRIDES
+# ====================================================================
+.DS_Store
+.idea/
+.vscode/
+*.swp
 *.log
 
-# VS Code
-.vscode/
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Temporary files
-*.tmp
-*.swp
-
-# Build files
-build/
-dist/
-*.egg-info/

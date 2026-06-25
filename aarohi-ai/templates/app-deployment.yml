@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-deployment
+  namespace: {{ .Values.global.namespace }}
+spec:
+  replicas: {{ .Values.webApp.replicaCount }}
+  selector:
+    matchLabels:
+      app: aarohi-web
+  template:
+    metadata:
+      labels:
+        app: aarohi-web
+    spec:
+      containers:
+      - name: web-app
+        image: {{ .Values.webApp.image }}
+        imagePullPolicy: {{ .Values.webApp.imagePullPolicy }}
+        resources:
+          requests:
+            memory: {{ .Values.webApp.resources.requests.memory | quote }}
+            cpu: {{ .Values.webApp.resources.requests.cpu | quote }}
+          limits:
+            memory: {{ .Values.webApp.resources.limits.memory | quote }}
+            cpu: {{ .Values.webApp.resources.limits.cpu | quote }}
+        readinessProbe:
+          httpGet: { path: /login, port: 5000 }
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        livenessProbe:
+          httpGet: { path: /login, port: 5000 }
+          initialDelaySeconds: 15
+          periodSeconds: 10
+        ports:
+        - containerPort: 5000
+        env:
+        - name: FLASK_DEBUG
+          value: {{ .Values.webApp.env.flaskDebug | quote }}
+        - name: FLASK_HOST
+          value: {{ .Values.webApp.env.flaskHost | quote }}
+        - name: FLASK_PORT
+          value: {{ .Values.webApp.env.flaskPort | quote }}
+        # ... your existing database environment variables stay below here ...
+
+        env:
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef: { name: app-config, key: DB_HOST }
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef: { name: app-config, key: DB_PORT }
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef: { name: app-config, key: DB_NAME }
+        - name: DB_USER
+          valueFrom:
+            configMapKeyRef: { name: app-config, key: DB_USER }
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef: { name: mysql-secrets, key: mysql-password }
+

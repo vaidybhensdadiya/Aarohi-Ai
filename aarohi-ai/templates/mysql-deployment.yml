@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment
+  namespace: {{ .Values.global.namespace }}
+spec:
+  replicas: {{ .Values.mysql.replicaCount }}
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: {{ .Values.mysql.image }}
+        resources:
+          requests:
+            memory: {{ .Values.mysql.resources.requests.memory | quote }}
+            cpu: {{ .Values.mysql.resources.requests.cpu | quote }}
+          limits:
+            memory: {{ .Values.mysql.resources.limits.memory | quote }}
+            cpu: {{ .Values.mysql.resources.limits.cpu | quote }}
+        readinessProbe:
+          exec:
+            command: ["mysqladmin", "ping", "-h", "localhost"]
+          initialDelaySeconds: 15
+          periodSeconds: 5
+        livenessProbe:
+          exec:
+            command: ["mysqladmin", "ping", "-h", "localhost"]
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        env:
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef: { name: app-config, key: DB_NAME }
+        - name: MYSQL_USER
+          valueFrom:
+            configMapKeyRef: { name: app-config, key: DB_USER }
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef: { name: mysql-secrets, key: mysql-password }
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef: { name: mysql-secrets, key: mysql-password }
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: mysql-persistent-storage
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: mysql-pvc
+

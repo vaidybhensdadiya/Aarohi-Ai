@@ -1,0 +1,7 @@
+apiVersion: v2
+name: aarohi-chart
+description: A production Helm chart for the Aarohi AI Orchestrator Stack
+type: application
+version: 1.0.0
+appVersion: "1.1.0"
+
