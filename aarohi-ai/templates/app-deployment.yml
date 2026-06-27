@@ -13,10 +13,21 @@ spec:
       labels:
         app: aarohi-web
     spec:
+      # 💡 Pod-level security context forcing non-root execution cluster-wide
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        fsGroup: 10001
       containers:
       - name: web-app
-        image: {{ .Values.webApp.image }}
+        image: "{{ .Values.webApp.image.registry }}/{{ .Values.webApp.image.repository }}:{{ .Values.webApp.image.tag }}"
         imagePullPolicy: {{ .Values.webApp.imagePullPolicy }}
+        # 💡 Container-level security context disabling privilege escalation
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
         resources:
           requests:
             memory: {{ .Values.webApp.resources.requests.memory | quote }}
@@ -34,6 +45,7 @@ spec:
           periodSeconds: 10
         ports:
         - containerPort: 5000
+        # 💡 Merged into one single, valid env list block
         env:
         - name: FLASK_DEBUG
           value: {{ .Values.webApp.env.flaskDebug | quote }}
@@ -41,9 +53,6 @@ spec:
           value: {{ .Values.webApp.env.flaskHost | quote }}
         - name: FLASK_PORT
           value: {{ .Values.webApp.env.flaskPort | quote }}
-        # ... your existing database environment variables stay below here ...
-
-        env:
         - name: DB_HOST
           valueFrom:
             configMapKeyRef: { name: app-config, key: DB_HOST }
@@ -59,4 +68,5 @@ spec:
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef: { name: mysql-secrets, key: mysql-password }
+
 

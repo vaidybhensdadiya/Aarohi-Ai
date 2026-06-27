@@ -13,9 +13,19 @@ spec:
       labels:
         app: mysql
     spec:
+      # 💡 Hardens the MySQL instance to execute with native unprivileged user permissions
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        fsGroup: 999
       containers:
       - name: mysql
         image: {{ .Values.mysql.image }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
         resources:
           requests:
             memory: {{ .Values.mysql.resources.requests.memory | quote }}
