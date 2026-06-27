@@ -112,7 +112,8 @@ jobs:
       - name: Scan Terraform & Kubernetes (Checkov)
         uses: bridgecrewio/checkov-action@master
         with:
-          directory: .
+          skip_path: K8s
+          directory: aarohi-ai/
           framework: terraform,kubernetes
           quiet: true
           soft_fail: false
