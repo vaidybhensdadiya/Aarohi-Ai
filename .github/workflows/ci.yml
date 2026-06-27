@@ -123,14 +123,18 @@ jobs:
       # Trivy Filesystem Scan
       #################################################
       - name: Trivy Filesystem Scan
-        uses: aquasecurity/trivy-action@v0.30.0
+        uses: aquasecurity/setup-trivy@v0.2.6
         with:
+          version: v0.71.2 
           scan-type: fs
           scan-ref: .
           format: table
           severity: HIGH,CRITICAL
           exit-code: "1"
           ignore-unfixed: true
+                    # Pin a safe Trivy binary version
+                    # Pin a safe Trivy binary version
+
 
       #################################################
       # Success
