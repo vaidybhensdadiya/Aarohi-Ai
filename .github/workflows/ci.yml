@@ -1,0 +1,143 @@
+name: CI - Code Quality & DevSecOps
+
+on:
+  push:
+    branches:
+      - KrishV
+  pull_request:
+    branches:
+      - KrishV
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  security:
+    name: Code Security & Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      #################################################
+      # Checkout Repository
+      #################################################
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      #################################################
+      # Setup Python
+      #################################################
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      #################################################
+      # Install Python Dependencies
+      #################################################
+      - name: Install Project Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+
+      #################################################
+      # Install Security Tools
+      #################################################
+      - name: Install Security Tools
+        run: |
+          pip install pip-audit safety
+
+      #################################################
+      # Gitleaks
+      #################################################
+      - name: Scan for Secrets (Gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      #################################################
+      # pip-audit
+      #################################################
+      - name: Scan Python Dependencies (pip-audit)
+        run: |
+          pip-audit
+
+      #################################################
+      # Safety
+      #################################################
+      - name: Safety Scan
+        run: |
+          safety scan --full-report
+
+      #################################################
+      # Hadolint
+      #################################################
+      - name: Lint Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+
+      #################################################
+      # Terraform Setup
+      #################################################
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      #################################################
+      # Terraform Format Check
+      #################################################
+      - name: Terraform Format
+        working-directory: terraform
+        run: terraform fmt -check -recursive
+
+      #################################################
+      # Terraform Init
+      #################################################
+      - name: Terraform Init
+        working-directory: terraform
+        run: terraform init
+
+      #################################################
+      # Terraform Validate
+      #################################################
+      - name: Terraform Validate
+        working-directory: terraform
+        run: terraform validate
+
+      #################################################
+      # Checkov
+      #################################################
+      - name: Scan Terraform & Kubernetes (Checkov)
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: .
+          framework: terraform,kubernetes
+          quiet: true
+          soft_fail: false
+
+      #################################################
+      # Trivy Filesystem Scan
+      #################################################
+      - name: Trivy Filesystem Scan
+        uses: aquasecurity/trivy-action@0.24.0
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: table
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+          ignore-unfixed: true
+
+      #################################################
+      # Success
+      #################################################
+      - name: Pipeline Status
+        run: |
+          echo "========================================="
+          echo "CI Security Pipeline Completed"
+          echo "Repository is ready for Docker Build."
+          echo "========================================="
