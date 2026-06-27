@@ -3,46 +3,68 @@
 
 {% block extra_css %}
 <style>
+    /* Checkout Layout */
     .store-layout {
         max-width: 800px;
         margin: 0 auto;
-        padding: 3rem 1rem;
+        padding: 2rem;
     }
 
     .checkout-panel {
-        background: #fff;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
         padding: 3rem;
-        border-radius: 12px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(200, 168, 233, 0.08);
+    }
+
+    .success-section {
+        text-align: center;
+        padding: 1.5rem 0;
     }
 
     .success-icon {
-        font-size: 5rem;
+        font-size: 4rem;
         color: #27ae60;
-        text-align: center;
-        margin-bottom: 1rem;
-        display: block;
+        background: rgba(39, 174, 96, 0.1);
+        width: 100px;
+        height: 100px;
+        line-height: 100px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 4px 15px rgba(39, 174, 96, 0.15);
     }
 
     .checkout-panel h2 {
-        text-align: center;
-        color: #2c3e50;
+        color: var(--text-dark);
+        font-size: 1.8rem;
+        font-weight: 700;
         margin-bottom: 2rem;
+        text-align: center;
     }
 
+    /* Summary list */
     .summary-list {
         list-style: none;
         padding: 0;
-        margin: 0 0 2rem 0;
-        border-top: 1px solid #eee;
+        margin: 0 0 1.5rem 0;
+        border-top: 1.5px solid rgba(200, 168, 233, 0.2);
     }
 
     .summary-item {
         display: flex;
         justify-content: space-between;
         padding: 1rem 0;
-        border-bottom: 1px solid #eee;
-        color: #555;
+        border-bottom: 1px solid rgba(200, 168, 233, 0.1);
+        color: var(--text-dark);
+        font-weight: 500;
+    }
+
+    .summary-item span:first-child {
+        color: var(--text-light);
     }
 
     .summary-total {
@@ -50,43 +72,193 @@
         justify-content: space-between;
         padding: 1.5rem 0;
         font-size: 1.4rem;
-        font-weight: bold;
-        color: #e74c3c;
+        font-weight: 700;
+        color: #d81b60;
+        /* Themed grand total color */
+        margin-bottom: 1.5rem;
     }
 
+    /* Form Fields */
+    .checkout-section-title {
+        font-size: 1.2rem;
+        color: var(--text-dark);
+        margin: 2rem 0 1rem 0;
+        font-weight: 700;
+        border-left: 3px solid var(--primary-pink);
+        padding-left: 0.6rem;
+    }
+
+    .address-textarea {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid rgba(200, 168, 233, 0.4);
+        border-radius: 12px;
+        font-family: inherit;
+        font-size: 1rem;
+        margin-bottom: 2rem;
+        resize: vertical;
+        background: rgba(255, 255, 255, 0.8);
+        outline: none;
+        color: var(--text-dark);
+        transition: all 0.3s ease;
+    }
+
+    .address-textarea:focus {
+        border-color: var(--primary-pink);
+        box-shadow: 0 0 12px rgba(255, 158, 197, 0.2);
+        background: #fff;
+    }
+
+    /* Payment Grid Cards */
+    .payment-methods-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .payment-method-card {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1.25rem;
+        border-radius: 14px;
+        border: 2px solid rgba(200, 168, 233, 0.3);
+        background: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .payment-method-card:hover {
+        border-color: var(--primary-pink);
+        background: rgba(255, 255, 255, 0.8);
+    }
+
+    /* CSS logic using modern :has selector */
+    .payment-method-card:has(input[type="radio"]:checked) {
+        border-color: var(--primary-pink);
+        background: rgba(255, 158, 197, 0.08);
+        box-shadow: 0 4px 15px rgba(255, 158, 197, 0.12);
+    }
+
+    .payment-method-icon {
+        font-size: 1.6rem;
+    }
+
+    .payment-method-text {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .payment-method-text strong {
+        color: var(--text-dark);
+        font-size: 0.95rem;
+    }
+
+    .payment-method-text span {
+        color: var(--text-light);
+        font-size: 0.8rem;
+        margin-top: 0.15rem;
+    }
+
+    .checkmark-circle {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        border: 2px solid rgba(200, 168, 233, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        color: transparent;
+        transition: all 0.2s ease;
+    }
+
+    .payment-method-card:has(input[type="radio"]:checked) .checkmark-circle {
+        background: var(--primary-pink);
+        border-color: var(--primary-pink);
+        color: #fff;
+    }
+
+    /* Buttons */
     .btn-pay {
         display: block;
         width: 100%;
-        background-color: #f1c40f;
-        color: #333;
+        background: linear-gradient(135deg, var(--primary-pink), var(--lavender));
+        color: #fff;
         border: none;
-        padding: 1.2rem;
-        border-radius: 8px;
-        font-size: 1.2rem;
+        padding: 1rem;
+        border-radius: 25px;
+        font-size: 1.1rem;
         font-weight: bold;
         cursor: pointer;
         text-align: center;
-        transition: background-color 0.2s;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(255, 158, 197, 0.25);
     }
 
     .btn-pay:hover {
-        background-color: #f39c12;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(255, 158, 197, 0.35);
+        opacity: 0.95;
     }
 
     .btn-continue {
         display: inline-block;
-        background-color: #3498db;
+        background: linear-gradient(135deg, var(--primary-pink), var(--lavender));
         color: #fff;
-        padding: 1rem 2rem;
+        padding: 0.8rem 2rem;
         border-radius: 25px;
         text-decoration: none;
         font-weight: bold;
         margin-top: 2rem;
         text-align: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(255, 158, 197, 0.25);
     }
 
-    .center-text {
+    .btn-continue:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(255, 158, 197, 0.35);
+        color: #fff;
+    }
+
+    .status-alert {
+        padding: 1rem;
+        border-radius: 10px;
+        margin: 1.5rem auto;
+        max-width: 450px;
+        font-weight: 600;
         text-align: center;
+        font-size: 0.95rem;
+    }
+
+    .status-alert.online {
+        background: rgba(46, 204, 113, 0.1);
+        border: 1px solid rgba(46, 204, 113, 0.2);
+        color: #27ae60;
+    }
+
+    .status-alert.offline {
+        background: rgba(241, 196, 15, 0.1);
+        border: 1px solid rgba(241, 196, 15, 0.25);
+        color: #d35400;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+        .checkout-panel {
+            padding: 2rem;
+        }
+
+        .payment-methods-grid {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
 {% endblock %}
@@ -96,22 +268,21 @@
     <div class="checkout-panel">
 
         {% if success %}
-        <div class="center-text">
+        <!-- Order Placement Success screen -->
+        <div class="success-section">
             <span class="success-icon">✓</span>
             <h2>Order Placed Successfully!</h2>
-            <p style="color: #7f8c8d; font-size: 1.1rem; line-height: 1.6;">
+            <p style="color: var(--text-light); font-size: 1.1rem; line-height: 1.7; margin-bottom: 1.5rem;">
                 Thank you for shopping with Aarohi AI.<br>
-                Your items are being expertly prepared and will ship soon.
+                Your order is being prepared and will ship soon.
             </p>
             {% if payment_method == 'online' %}
-            <div
-                style="background: #e8f8f5; border: 1px solid #27ae60; color: #27ae60; padding: 1rem; border-radius: 8px; margin: 1.5rem auto; max-width: 400px; font-weight: 600;">
-                Online Payment Successful. Receipt sent to your email.
+            <div class="status-alert online">
+                ✓ Online Payment Successful. Confirmation sent to your email.
             </div>
             {% elif payment_method == 'offline' %}
-            <div
-                style="background: #fef9e7; border: 1px solid #f1c40f; color: #d35400; padding: 1rem; border-radius: 8px; margin: 1.5rem auto; max-width: 400px; font-weight: 600;">
-                Cash on Delivery Selected. Please keep cash ready at the time of delivery.
+            <div class="status-alert offline">
+                🛈 Cash on Delivery Selected. Keep cash ready for delivery.
             </div>
             {% endif %}
             <a href="{{ url_for('ecommerce.store_home') }}" class="btn-continue">Return to Store</a>
@@ -123,40 +294,54 @@
             {% for item in cart_items %}
             <li class="summary-item">
                 <span>{{ item.quantity }}x {{ item.product_name }}</span>
-                <span>${{ "%.2f"|format(item.subtotal) }}</span>
+                <span>₹{{ "%.2f"|format(item.subtotal) }}</span>
             </li>
             {% endfor %}
         </ul>
         <div class="summary-total">
             <span>Order Total</span>
-            <span>${{ "%.2f"|format(cart_total) }}</span>
+            <span>₹{{ "%.2f"|format(cart_total) }}</span>
         </div>
 
         <form action="{{ url_for('ecommerce.place_order') }}" method="POST" class="checkout-form">
-            <div style="margin-top: 2rem; border-top: 1px solid #eee; padding-top: 1.5rem;">
-                <h3 style="margin-bottom: 1rem; color: #2c3e50;">Shipping Address</h3>
-                <textarea name="address" rows="3" required placeholder="Enter your full shipping address here..."
-                    style="width: 100%; padding: 0.8rem; border: 1px solid #ced4da; border-radius: 6px; font-family: inherit; font-size: 1rem; margin-bottom: 2rem; resize: vertical;"></textarea>
+            <div style="border-top: 1.5px solid rgba(200, 168, 233, 0.2); padding-top: 1.5rem;">
 
-                <h3 style="margin-bottom: 1rem; color: #2c3e50;">Payment Method</h3>
-                <div style="display: flex; gap: 2rem; margin-bottom: 2rem;">
-                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                        <input type="radio" name="payment_method" value="online" required checked>
-                        <span>Online Payment (Card/UPI)</span>
+                <h3 class="checkout-section-title">Shipping Address</h3>
+                <textarea name="address" rows="3" required
+                    placeholder="Enter your full shipping address (House No, Street, City, Pincode)..."
+                    class="address-textarea"></textarea>
+
+                <h3 class="checkout-section-title">Payment Method</h3>
+                <div class="payment-methods-grid">
+                    <label class="payment-method-card">
+                        <input type="radio" name="payment_method" value="online" required checked style="display:none;">
+                        <span class="payment-method-icon">💳</span>
+                        <div class="payment-method-text">
+                            <strong>Online Payment</strong>
+                            <span>UPI, Cards, Netbanking</span>
+                        </div>
+                        <span class="checkmark-circle">✓</span>
                     </label>
-                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                        <input type="radio" name="payment_method" value="offline" required>
-                        <span>Cash on Delivery (Offline)</span>
+                    <label class="payment-method-card">
+                        <input type="radio" name="payment_method" value="offline" required style="display:none;">
+                        <span class="payment-method-icon">💵</span>
+                        <div class="payment-method-text">
+                            <strong>Cash on Delivery</strong>
+                            <span>Offline Cash Payment</span>
+                        </div>
+                        <span class="checkmark-circle">✓</span>
                     </label>
                 </div>
             </div>
 
-            <button type="submit" class="btn-pay">Place Order Now & Pay</button>
+            <button type="submit" class="btn-pay">Place Order & Pay</button>
         </form>
 
-        <div style="text-align: center; margin-top: 1rem;">
-            <a href="{{ url_for('ecommerce.cart_page') }}" style="color: #7f8c8d; text-decoration: none;">←
-                Return to Cart</a>
+        <div style="text-align: center; margin-top: 1.5rem;">
+            <a href="{{ url_for('ecommerce.cart_page') }}"
+                style="color: var(--text-light); text-decoration: none; font-size: 0.95rem; font-weight: 500;">
+                ← Return to Cart
+            </a>
         </div>
 
         {% endif %}

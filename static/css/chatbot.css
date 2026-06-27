@@ -7,7 +7,9 @@
 .chat-main {
     flex: 1;
     padding: 2rem;
-    margin-left: 1.5rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .dashboard-welcome {
@@ -34,7 +36,7 @@
     box-shadow: 0 4px 20px rgba(248, 205, 218, 0.2);
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 180px);
+    height: 100%;
     min-height: 400px;
 }
 

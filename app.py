@@ -51,8 +51,8 @@ def create_app(config_class=Config):
     # FRONTEND ROUTES (Templates)
     # -----------------------------------
     @app.route('/')
-    def index():
-        return redirect(url_for('login_page'))
+    def landing_page():
+        return render_template('landing.html')
 
     @app.route('/login')
     def login_page():

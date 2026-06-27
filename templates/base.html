@@ -14,6 +14,7 @@
 
 <body>
     <!-- Navigation Bar (Top) -->
+    {% if not hide_navbar and hide_sidebar %}
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-brand">
@@ -24,6 +25,7 @@
             </ul>
         </div>
     </nav>
+    {% endif %}
 
     {% if not hide_sidebar %}
     <div class="dashboard-layout">
@@ -74,11 +76,13 @@
     {% endif %}
 
     <!-- Footer -->
+    {% if not hide_footer %}
     <footer class="footer">
         <div class="footer-container">
             <p>&copy; 2024 Aarohi AI. Empowering women's health and wellness.</p>
         </div>
     </footer>
+    {% endif %}
 
     {% block extra_js %}{% endblock %}
 </body>

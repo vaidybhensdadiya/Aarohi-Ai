@@ -1,0 +1,310 @@
+{% extends "base.html" %}
+{% set hide_sidebar = True %}
+{% set hide_navbar = True %}
+{% set hide_footer = True %}
+
+{% block title %}Aarohi AI - Empowering Women's Health Through AI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+<style>
+    /* Override global main container limits for landing page full-bleed layout */
+    .main-content {
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        min-height: auto !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="landing-body">
+
+    <!-- Premium Custom Sticky Header -->
+    <header class="landing-header">
+        <nav class="navbar-landing">
+            <div class="nav-brand" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                <h1>Aarohi AI</h1>
+            </div>
+
+            <button class="mobile-nav-toggle" aria-label="Toggle Navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <div class="nav-links-wrap">
+                <ul class="nav-menu-landing">
+                    <li><a href="#hero" class="nav-link-landing">Home</a></li>
+                    <li><a href="#problem" class="nav-link-landing">Challenges</a></li>
+                    <li><a href="#features" class="nav-link-landing">Solutions</a></li>
+                    <li><a href="#about" class="nav-link-landing">About Us</a></li>
+                </ul>
+                <div class="nav-cta">
+                    <a href="{{ url_for('login_page') }}" class="btn-landing btn-landing-secondary">Login</a>
+                    <a href="{{ url_for('register_page') }}" class="btn-landing btn-landing-primary">Get Started</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- 1. Hero Section -->
+    <section id="hero" class="landing-section">
+        <div class="hero-container">
+            <div class="hero-content reveal">
+                <div class="hero-badge">
+                    <span class="hero-badge-dot"></span>
+                    <span>AI-Powered Wellness Partner</span>
+                </div>
+                <h1 class="hero-title">Aarohi AI</h1>
+                <div class="hero-tagline">Empowering Women's Health Through AI</div>
+                <p class="hero-subtitle">
+                    Aarohi AI helps women track menstrual health, discover government schemes, find nearby
+                    gynecologists, and access trusted wellness products through one intelligent platform.
+                </p>
+                <div class="hero-actions">
+                    <a href="{{ url_for('register_page') }}" class="btn-landing btn-landing-primary">Get Started</a>
+                    <a href="{{ url_for('login_page') }}" class="btn-landing btn-landing-secondary">Login</a>
+                </div>
+            </div>
+            <div class="hero-illustration-wrap reveal delay-200">
+                <img src="{{ url_for('static', filename='images/hero_illustration.png') }}"
+                    alt="Women's Health and Technology Illustration" class="hero-img">
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. Problem Section -->
+    <section id="problem" class="landing-section">
+        <h2 class="section-title reveal">Women's Health Challenges Are Real</h2>
+        <div class="problem-grid">
+            <!-- Card 1 -->
+            <div class="problem-card reveal delay-100">
+                <div class="problem-icon-box">🌸</div>
+                <h3 class="problem-card-title">Lack of Menstrual Awareness</h3>
+                <p class="problem-card-desc">Social taboos, misconceptions, and sparse information limit access to
+                    necessary knowledge about periods and biological cycles.</p>
+            </div>
+            <!-- Card 2 -->
+            <div class="problem-card reveal delay-200">
+                <div class="problem-icon-box">🩺</div>
+                <h3 class="problem-card-title">Difficulty Finding Healthcare Support</h3>
+                <p class="problem-card-desc">Finding responsive, verified female healthcare professionals and
+                    gynecological clinics nearby can be stressful and complex.</p>
+            </div>
+            <!-- Card 3 -->
+            <div class="problem-card reveal delay-300">
+                <div class="problem-icon-box">📋</div>
+                <h3 class="problem-card-title">Limited Awareness of Schemes</h3>
+                <p class="problem-card-desc">Many women miss out on essential welfare programs, grants, and free
+                    healthcare facilities due to low awareness of government initiatives.</p>
+            </div>
+            <!-- Card 4 -->
+            <div class="problem-card reveal delay-400">
+                <div class="problem-icon-box">🧩</div>
+                <h3 class="problem-card-title">Fragmented Health Resources</h3>
+                <p class="problem-card-desc">Navigating disconnected websites, health stores, and separate trackers
+                    makes handling daily physical health overwhelming.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. Solution Section -->
+    <section id="features" class="landing-section">
+        <h2 class="section-title reveal">One Platform. Complete Support.</h2>
+        <div class="solution-grid">
+            <!-- Feature Card 1 -->
+            <div class="solution-card reveal delay-100">
+                <div class="solution-icon-box">💬</div>
+                <h3 class="solution-card-title">AI Health Chatbot</h3>
+                <p class="solution-card-desc">Instant guidance for menstrual health questions.</p>
+                <ul class="solution-card-bullets">
+                    <li>24/7 AI-driven assistance</li>
+                    <li>Multilingual support (En, Hi, Gu)</li>
+                    <li>Secure & private logs</li>
+                </ul>
+            </div>
+            <!-- Feature Card 2 -->
+            <div class="solution-card reveal delay-200">
+                <div class="solution-icon-box">📅</div>
+                <h3 class="solution-card-title">Period Predictor</h3>
+                <p class="solution-card-desc">ML-powered cycle prediction and tracking.</p>
+                <ul class="solution-card-bullets">
+                    <li>Symptom analysis dashboard</li>
+                    <li>Accurate prediction cycles</li>
+                    <li>Personalized health tips</li>
+                </ul>
+            </div>
+            <!-- Feature Card 3 -->
+            <div class="solution-card reveal delay-300">
+                <div class="solution-icon-box">📋</div>
+                <h3 class="solution-card-title">Government Schemes</h3>
+                <p class="solution-card-desc">Discover schemes based on age and state.</p>
+                <ul class="solution-card-bullets">
+                    <li>Filtered local welfare data</li>
+                    <li>Simple registration guides</li>
+                    <li>Empowering community help</li>
+                </ul>
+            </div>
+            <!-- Feature Card 4 -->
+            <div class="solution-card reveal delay-400">
+                <div class="solution-icon-box">🏥</div>
+                <h3 class="solution-card-title">Clinic Finder</h3>
+                <p class="solution-card-desc">Find nearby gynecologists quickly.</p>
+                <ul class="solution-card-bullets">
+                    <li>Interactive local clinic map</li>
+                    <li>Verified contact details</li>
+                    <li>Safe professional care</li>
+                </ul>
+            </div>
+            <!-- Feature Card 5 -->
+            <div class="solution-card reveal delay-400">
+                <div class="solution-icon-box">🛍</div>
+                <h3 class="solution-card-title">Health Store</h3>
+                <p class="solution-card-desc">Access menstrual wellness products.</p>
+                <ul class="solution-card-bullets">
+                    <li>High quality sanitary hygiene</li>
+                    <li>Fast delivery checkout</li>
+                    <li>Curated wellness bundles</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Impact Section -->
+    <section id="impact" class="landing-section">
+        <div class="impact-bg-wrap reveal">
+            <h2 class="section-title">Making a Real Impact</h2>
+            <div class="impact-grid">
+                <!-- Counter 1 -->
+                <div class="impact-item">
+                    <span class="stat-number" data-target="5000" data-suffix="+">0</span>
+                    <span class="stat-label">Women Supported</span>
+                </div>
+                <!-- Counter 2 -->
+                <div class="impact-item">
+                    <span class="stat-number" data-target="28" data-suffix="+">0</span>
+                    <span class="stat-label">States Covered</span>
+                </div>
+                <!-- Counter 3 -->
+                <div class="impact-item">
+                    <span class="stat-number" data-target="100" data-suffix="+">0</span>
+                    <span class="stat-label">Government Schemes</span>
+                </div>
+                <!-- Counter 4 -->
+                <div class="impact-item">
+                    <span class="stat-number" data-target="24" data-suffix="/7">0</span>
+                    <span class="stat-label">AI Assistance</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. How It Works Section -->
+    <section id="how-it-works" class="landing-section">
+        <h2 class="section-title reveal">How It Works</h2>
+        <div class="steps-container">
+            <!-- Step 1 -->
+            <div class="step-card reveal delay-100">
+                <div class="step-number">01</div>
+                <h3 class="step-title">Create an Account</h3>
+                <p class="step-desc">Register securely with your basic details to start your digital health profile.</p>
+            </div>
+            <!-- Step 2 -->
+            <div class="step-card reveal delay-200">
+                <div class="step-number">02</div>
+                <h3 class="step-title">Access Personalized Health Tools</h3>
+                <p class="step-desc">Utilize cycle predictors, find government assistance, or query our AI healthcare
+                    bot.</p>
+            </div>
+            <!-- Step 3 -->
+            <div class="step-card reveal delay-300">
+                <div class="step-number">03</div>
+                <h3 class="step-title">Get Support, Resources & Guidance</h3>
+                <p class="step-desc">Find clinics, order wellness items, and receive trusted healthcare recommendations
+                    instantly.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. About Section -->
+    <section id="about" class="landing-section">
+        <div class="about-card reveal">
+            <div class="about-intro-box">
+                <span class="about-brand-logo">Aarohi AI</span>
+                <span class="about-tagline">Digital Health Partner</span>
+            </div>
+            <div>
+                <p class="about-desc">
+                    Aarohi AI is a women-centric digital health platform designed to improve healthcare accessibility,
+                    menstrual awareness, scheme discovery, and healthcare support through intelligent technology
+                    solutions.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. Call To Action (CTA) Section -->
+    <section id="cta" class="landing-section">
+        <div class="cta-wrapper reveal">
+            <h2 class="cta-title">Take Charge of Your Health Today</h2>
+            <p class="cta-subtitle">Join thousands of women who are tracking their cycles, discovering government
+                schemes, and securing wellness support with Aarohi AI.</p>
+            <div class="cta-actions">
+                <a href="{{ url_for('register_page') }}" class="btn-landing btn-landing-primary">Create Account</a>
+                <a href="{{ url_for('login_page') }}" class="btn-landing btn-landing-secondary">Login</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. Footer Section -->
+    <footer class="footer-landing">
+        <div class="footer-top">
+            <div class="footer-brand-col">
+                <h3>Aarohi AI</h3>
+                <p class="footer-brand-desc">Empowering women's health through artificial intelligence and comprehensive
+                    wellness tools.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Platform</h4>
+                <ul class="footer-links">
+                    <li><a href="#hero">Home</a></li>
+                    <li><a href="#problem">Challenges</a></li>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#about">About</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Legal</h4>
+                <ul class="footer-links">
+                    <li><a href="#privacy">Privacy Policy</a></li>
+                    <li><a href="#terms">Terms of Service</a></li>
+                    <li><a href="#disclosure">Medical Disclaimer</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contact</h4>
+                <p class="footer-contact-info">
+                    Support: contact@aarohiai.org<br>
+                    Helpline: +91 1800-AAROHI<br>
+                    Gujarat, India
+                </p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="footer-copy">&copy; Aarohi AI. Empowering Women's Health Through Technology.</p>
+            <div class="footer-socials">
+                <a href="#" class="footer-social-link" aria-label="Twitter">🕊</a>
+                <a href="#" class="footer-social-link" aria-label="LinkedIn">💼</a>
+                <a href="#" class="footer-social-link" aria-label="Instagram">📸</a>
+            </div>
+        </div>
+    </footer>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/landing.js') }}"></script>
+{% endblock %}

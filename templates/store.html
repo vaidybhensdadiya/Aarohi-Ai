@@ -3,95 +3,150 @@
 
 {% block extra_css %}
 <style>
-    /* Store Container Layout */
+    /* Main Layout */
     .store-layout {
-        display: flex;
         max-width: 1400px;
         margin: 0 auto;
         padding: 2rem;
+        background: transparent;
+        display: flex;
+        flex-direction: column;
         gap: 2rem;
-        background-color: #fcfcfc;
     }
 
-    /* Sidebar Filters */
-    .store-sidebar {
-        width: 250px;
-        flex-shrink: 0;
-        background: #fff;
-        border-radius: 12px;
-        padding: 1.5rem;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
-        height: fit-content;
-    }
-
-    .store-sidebar h3 {
-        font-size: 1.2rem;
-        color: #2c3e50;
-        margin-bottom: 1rem;
-        font-weight: 700;
-        border-bottom: 2px solid #f0f0f0;
-        padding-bottom: 0.5rem;
-    }
-
-    .category-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .category-link {
-        display: block;
-        padding: 0.8rem 1rem;
-        color: #555;
-        text-decoration: none;
-        border-radius: 8px;
-        transition: all 0.2s ease;
-        margin-bottom: 0.3rem;
-        font-weight: 500;
-    }
-
-    .category-link:hover,
-    .category-link.active {
-        background-color: #e8f4fd;
-        color: #3498db;
-        transform: translateX(5px);
-    }
-
-    /* Main Content */
-    .store-main {
-        flex-grow: 1;
-    }
-
-    .store-header {
+    /* Top Control Bar */
+    .store-top-bar {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 2rem;
+        gap: 1.5rem;
+        flex-wrap: wrap;
     }
 
-    .store-header h2 {
-        color: #2c3e50;
-        font-size: 1.8rem;
-        margin: 0;
+    .store-search-container {
+        position: relative;
+        flex: 1;
+        min-width: 280px;
+        max-width: 600px;
     }
 
-    .cart-summary-btn {
-        background-color: #f39c12;
+    .search-icon {
+        position: absolute;
+        left: 1.25rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.1rem;
+        color: var(--text-light);
+        pointer-events: none;
+    }
+
+    .store-search-input {
+        width: 100%;
+        padding: 0.8rem 1.2rem 0.8rem 2.75rem;
+        border: 2px solid rgba(200, 168, 233, 0.4);
+        border-radius: 30px;
+        font-size: 1rem;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        color: var(--text-dark);
+        transition: all 0.3s ease;
+    }
+
+    .store-search-input:focus {
+        outline: none;
+        border-color: var(--primary-pink);
+        box-shadow: 0 0 15px rgba(255, 158, 197, 0.25);
+        background: #fff;
+    }
+
+    .store-cart-btn {
+        background: linear-gradient(135deg, var(--primary-pink), var(--lavender));
         color: #fff;
-        padding: 0.6rem 1.2rem;
-        border-radius: 25px;
+        padding: 0.8rem 1.8rem;
+        border-radius: 30px;
         text-decoration: none;
-        font-weight: bold;
+        font-weight: 600;
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
-        transition: background-color 0.2s;
-        box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
+        gap: 0.6rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px var(--shadow-medium);
+        border: none;
     }
 
-    .cart-summary-btn:hover {
-        background-color: #d68910;
+    .store-cart-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px var(--shadow-medium);
+        opacity: 0.95;
         color: #fff;
+    }
+
+    /* Category Pills Bar */
+    .category-pills-container {
+        width: 100%;
+        overflow-x: auto;
+        padding: 0.5rem 0;
+        margin-bottom: 0.5rem;
+        scrollbar-width: none; /* Firefox */
+    }
+
+    .category-pills-container::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+    }
+
+    .category-pills-track {
+        display: flex;
+        gap: 0.8rem;
+        width: max-content;
+        padding: 0.2rem;
+    }
+
+    .category-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.6rem 1.25rem;
+        border-radius: 25px;
+        color: var(--text-dark);
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        border: 1px solid rgba(200, 168, 233, 0.3);
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+        cursor: pointer;
+        font-size: 0.95rem;
+    }
+
+    .category-pill:hover {
+        background: rgba(255, 255, 255, 0.9);
+        border-color: var(--primary-pink);
+        transform: translateY(-1px);
+    }
+
+    .category-pill.active {
+        background: linear-gradient(135deg, var(--primary-pink), var(--lavender));
+        color: #fff;
+        border-color: transparent;
+        font-weight: 600;
+        box-shadow: 0 4px 12px var(--shadow-soft);
+    }
+
+    /* Store Main Content */
+    .store-main-content {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .store-main-content h2 {
+        font-size: 1.6rem;
+        color: var(--text-dark);
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        border-left: 4px solid var(--primary-pink);
+        padding-left: 0.8rem;
     }
 
     /* Product Grid */
@@ -103,11 +158,16 @@
 
     /* Product Card */
     .product-card {
-        background: #fff;
-        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 18px;
         overflow: hidden;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: 0 8px 32px rgba(200, 168, 233, 0.08);
+        transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), 
+                    box-shadow 0.4s ease, 
+                    border-color 0.4s ease;
         display: flex;
         flex-direction: column;
         height: 100%;
@@ -115,29 +175,32 @@
     }
 
     .product-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+        transform: translateY(-6px);
+        box-shadow: 0 16px 36px rgba(255, 158, 197, 0.15);
+        border-color: rgba(255, 158, 197, 0.5);
     }
 
     .product-image-container {
         height: 220px;
         width: 100%;
         overflow: hidden;
-        background-color: #f8f9fa;
+        background: radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(245,235,248,0.5) 100%);
         display: flex;
         align-items: center;
         justify-content: center;
+        border-bottom: 1px solid rgba(200, 168, 233, 0.15);
+        padding: 1.5rem;
     }
 
     .product-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.5s ease;
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        transition: transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
     }
 
     .product-card:hover .product-image {
-        transform: scale(1.05);
+        transform: scale(1.06);
     }
 
     .product-info {
@@ -147,83 +210,128 @@
         flex-grow: 1;
     }
 
+    .product-category-tag {
+        font-size: 0.75rem;
+        color: var(--text-light);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        background: rgba(200, 168, 233, 0.15);
+        padding: 0.2rem 0.6rem;
+        border-radius: 12px;
+        width: fit-content;
+    }
+
     .product-title {
-        font-size: 1.1rem;
-        color: #2c3e50;
-        margin: 0 0 0.5rem 0;
+        font-size: 1.05rem;
+        color: var(--text-dark);
+        margin: 0.25rem 0 0.75rem 0;
         font-weight: 600;
         line-height: 1.4;
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
-    }
-
-    .product-category {
-        font-size: 0.85rem;
-        color: #7f8c8d;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 1rem;
+        height: 3rem; /* alignment wrapper */
     }
 
     .product-price {
-        font-size: 1.4rem;
-        color: #e74c3c;
+        font-size: 1.35rem;
+        color: #d81b60; /* Elegant rose accent */
         font-weight: 700;
         margin-top: auto;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
     }
 
     .product-actions {
         display: flex;
-        gap: 0.5rem;
+        gap: 0.75rem;
+        margin-top: auto;
     }
 
     .btn-view {
         flex: 1;
-        background-color: #fff;
-        color: #3498db;
-        border: 2px solid #3498db;
+        background: transparent;
+        color: var(--text-dark);
+        border: 2px solid var(--light-lavender);
         padding: 0.6rem;
         text-align: center;
-        border-radius: 6px;
+        border-radius: 25px;
         text-decoration: none;
         font-weight: 600;
-        transition: all 0.2s;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
     }
 
     .btn-view:hover {
-        background-color: #3498db;
-        color: #fff;
+        border-color: var(--lavender);
+        background: rgba(200, 168, 233, 0.1);
+        color: var(--text-dark);
     }
 
     .btn-add {
-        flex: 1;
-        background-color: #f1c40f;
-        color: #333;
+        flex: 1.2;
+        background: linear-gradient(135deg, var(--primary-pink), var(--lavender));
+        color: #fff;
         border: none;
         padding: 0.6rem;
-        border-radius: 6px;
+        border-radius: 25px;
         font-weight: 600;
         cursor: pointer;
-        transition: background-color 0.2s;
+        transition: all 0.3s ease;
         text-align: center;
-        font-size: 0.95rem;
+        font-size: 0.85rem;
+        box-shadow: 0 4px 10px rgba(255, 158, 197, 0.2);
     }
 
     .btn-add:hover {
-        background-color: #f39c12;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 15px rgba(255, 158, 197, 0.3);
+        opacity: 0.95;
+    }
+
+    /* Empty state */
+    .no-results-card {
+        text-align: center;
+        padding: 5rem 2rem;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 18px;
+        color: var(--text-light);
+        grid-column: 1 / -1;
+        display: none;
+    }
+
+    .no-results-card h3 {
+        color: var(--text-dark);
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
     }
 
     /* Responsive */
-    @media (max-width: 900px) {
+    @media (max-width: 768px) {
         .store-layout {
-            flex-direction: column;
+            padding: 1rem 1.5rem;
+            gap: 1.5rem;
         }
 
-        .store-sidebar {
-            width: 100%;
+        .store-top-bar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .store-search-container {
+            max-width: 100%;
+        }
+
+        .product-grid {
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.5rem;
         }
     }
 </style>
@@ -232,65 +340,76 @@
 {% block content %}
 <div class="store-layout">
 
-    <!-- Store Category Sidebar -->
-    <aside class="store-sidebar">
-        <h3>Categories</h3>
-        <ul class="category-list">
-            <li><a href="{{ url_for('ecommerce.store_home') }}"
-                    class="category-link {% if not active_category %}active{% endif %}">All Products</a></li>
-            <li><a href="{{ url_for('ecommerce.store_home', category='Sanitary pads') }}"
-                    class="category-link {% if active_category == 'Sanitary pads' %}active{% endif %}">Sanitary
-                    Pads</a></li>
-            <li><a href="{{ url_for('ecommerce.store_home', category='Tampons') }}"
-                    class="category-link {% if active_category == 'Tampons' %}active{% endif %}">Tampons</a>
-            </li>
-            <li><a href="{{ url_for('ecommerce.store_home', category='Menstrual cups') }}"
-                    class="category-link {% if active_category == 'Menstrual cups' %}active{% endif %}">Menstrual
-                    Cups</a></li>
-            <li><a href="{{ url_for('ecommerce.store_home', category='Heating pads') }}"
-                    class="category-link {% if active_category == 'Heating pads' %}active{% endif %}">Heating
-                    Pads</a></li>
-            <li><a href="{{ url_for('ecommerce.store_home', category='Intimate hygiene products') }}"
-                    class="category-link {% if active_category == 'Intimate hygiene products' %}active{% endif %}">Intimate
-                    Hygiene</a></li>
-            <li><a href="{{ url_for('ecommerce.store_home', category='Pregnancy kits') }}"
-                    class="category-link {% if active_category == 'Pregnancy kits' %}active{% endif %}">Pregnancy
-                    Kits</a></li>
-        </ul>
-    </aside>
+    <!-- Top Control Panel (Search & Cart) -->
+    <div class="store-top-bar">
+        <div class="store-search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="storeSearchInput" placeholder="Search product name, category, or brand..." class="store-search-input">
+        </div>
+        <a href="{{ url_for('ecommerce.cart_page') }}" class="store-cart-btn">
+            <span>🛒</span> View Cart
+        </a>
+    </div>
 
-    <!-- Product Display Area -->
-    <div class="store-main">
-        <div class="store-header">
-            <h2>{{ active_category if active_category else 'All Products' }}</h2>
-            <a href="{{ url_for('ecommerce.cart_page') }}" class="cart-summary-btn">
-                🛒 View Cart
+    <!-- Category Selector Pill Row -->
+    <div class="category-pills-container">
+        <div class="category-pills-track">
+            <a href="{{ url_for('ecommerce.store_home') }}"
+                class="category-pill {% if not active_category %}active{% endif %}">
+                ✨ All Products
+            </a>
+            <a href="{{ url_for('ecommerce.store_home', category='Sanitary pads') }}"
+                class="category-pill {% if active_category == 'Sanitary pads' %}active{% endif %}">
+                🌸 Sanitary Pads
+            </a>
+            <a href="{{ url_for('ecommerce.store_home', category='Tampons') }}"
+                class="category-pill {% if active_category == 'Tampons' %}active{% endif %}">
+                💧 Tampons
+            </a>
+            <a href="{{ url_for('ecommerce.store_home', category='Menstrual cups') }}"
+                class="category-pill {% if active_category == 'Menstrual cups' %}active{% endif %}">
+                🍷 Menstrual Cups
+            </a>
+            <a href="{{ url_for('ecommerce.store_home', category='Heating pads') }}"
+                class="category-pill {% if active_category == 'Heating pads' %}active{% endif %}">
+                🔥 Heating Pads
+            </a>
+            <a href="{{ url_for('ecommerce.store_home', category='Intimate hygiene products') }}"
+                class="category-pill {% if active_category == 'Intimate hygiene products' %}active{% endif %}">
+                🧼 Intimate Hygiene
+            </a>
+            <a href="{{ url_for('ecommerce.store_home', category='Pregnancy kits') }}"
+                class="category-pill {% if active_category == 'Pregnancy kits' %}active{% endif %}">
+                👶 Pregnancy Kits
             </a>
         </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="store-main-content">
+        <h2>{{ active_category if active_category else 'All Products' }}</h2>
 
         {% if products %}
-        <div class="product-grid">
+        <div class="product-grid" id="productGrid">
             {% for product in products %}
             <div class="product-card">
                 <div class="product-image-container">
                     {% if product.image_url %}
-                    <img src="{{ product.image_url }}" alt="{{ product.product_name }}" width="150"
-                        class="product-image" loading="lazy">
+                    <img src="{{ product.image_url }}" alt="{{ product.product_name }}" class="product-image" loading="lazy">
                     {% else %}
                     <img src="{{ url_for('static', filename='images/placeholder.png') }}"
-                        alt="{{ product.product_name }}" width="150" class="product-image" loading="lazy">
+                        alt="{{ product.product_name }}" class="product-image" loading="lazy">
                     {% endif %}
                 </div>
                 <div class="product-info">
+                    <span class="product-category-tag">{{ product.category }}</span>
                     <h4 class="product-title">{{ product.product_name }}</h4>
-                    <span class="product-category">{{ product.category }}</span>
-                    <div class="product-price">${{ "%.2f"|format(product.price) }}</div>
+                    <div class="product-price">₹{{ "%.2f"|format(product.price) }}</div>
 
                     <div class="product-actions">
-                        <a href="{{ url_for('ecommerce.product_detail', product_id=product.id) }}" class="btn-view">View
-                            details</a>
+                        <a href="{{ url_for('ecommerce.product_detail', product_id=product.id) }}" class="btn-view">Details</a>
                         <form action="{{ url_for('ecommerce.add_to_cart', product_id=product.id) }}" method="POST"
-                            style="display:inline; flex:1;">
+                            style="display:inline; flex:1.2;">
                             <input type="hidden" name="quantity" value="1">
                             <button type="submit" class="btn-add">Add to Cart</button>
                         </form>
@@ -298,9 +417,15 @@
                 </div>
             </div>
             {% endfor %}
+
+            <!-- Dynamic Search No Results State -->
+            <div class="no-results-card" id="noResultsCard">
+                <h3>No items match your search</h3>
+                <p>Try searching for other wellness or hygiene terms.</p>
+            </div>
         </div>
         {% else %}
-        <div style="text-align: center; padding: 4rem; background: #fff; border-radius: 12px; color: #7f8c8d;">
+        <div style="text-align: center; padding: 4rem; background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px); border-radius: 18px; color: var(--text-light); border: 1px solid rgba(255,255,255,0.5);">
             <h3>No products found in this category.</h3>
             <p>Please check back later or explore other categories.</p>
         </div>
@@ -316,5 +441,36 @@
     requireAuth();
     loadUserInfo();
     document.getElementById('logoutLink').addEventListener('click', handleLogout);
+
+    // Client-side search implementation
+    const searchInput = document.getElementById('storeSearchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            const productCards = document.querySelectorAll('.product-card');
+            const noResultsCard = document.getElementById('noResultsCard');
+            let visibleCount = 0;
+
+            productCards.forEach(card => {
+                const title = card.querySelector('.product-title').textContent.toLowerCase();
+                const category = card.querySelector('.product-category-tag').textContent.toLowerCase();
+                
+                if (title.includes(query) || category.includes(query)) {
+                    card.style.display = '';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            if (noResultsCard) {
+                if (visibleCount === 0) {
+                    noResultsCard.style.display = 'block';
+                } else {
+                    noResultsCard.style.display = 'none';
+                }
+            }
+        });
+    }
 </script>
 {% endblock %}

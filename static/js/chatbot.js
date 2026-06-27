@@ -15,6 +15,72 @@ function getAPIHeaders() {
     };
 }
 
+function parseMarkdown(text) {
+    if (!text) return "";
+    
+    // Escaping HTML characters first to avoid XSS
+    let escaped = text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+        
+    // Split by newlines to parse blocks
+    const lines = escaped.split('\n');
+    let inList = false;
+    let result = [];
+    
+    for (let i = 0; i < lines.length; i++) {
+        let line = lines[i];
+        let trimmed = line.trim();
+        
+        // Handle bold: **text** -> <strong>text</strong>
+        line = line.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+        // Handle italic: *text* -> <em>text</em>
+        line = line.replace(/\*(.*?)\*/g, "<em>$1</em>");
+        
+        // Check for headers
+        if (trimmed.startsWith('### ')) {
+            if (inList) { result.push('</ul>'); inList = false; }
+            result.push(`<h4 style="margin: 0.8rem 0 0.4rem 0; font-weight: bold; font-size: 1.1rem; color: #1a1a1a;">${trimmed.substring(4)}</h4>`);
+        } else if (trimmed.startsWith('## ')) {
+            if (inList) { result.push('</ul>'); inList = false; }
+            result.push(`<h3 style="margin: 1rem 0 0.5rem 0; font-weight: bold; font-size: 1.25rem; color: #1a1a1a;">${trimmed.substring(3)}</h3>`);
+        } else if (trimmed.startsWith('# ')) {
+            if (inList) { result.push('</ul>'); inList = false; }
+            result.push(`<h2 style="margin: 1.2rem 0 0.6rem 0; font-weight: bold; font-size: 1.4rem; color: #1a1a1a;">${trimmed.substring(2)}</h2>`);
+        }
+        // Check for bullet list item: starts with "* " or "- "
+        else if (trimmed.startsWith('* ') || trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
+            if (!inList) {
+                result.push('<ul style="margin: 0.5rem 0; padding-left: 1.5rem; list-style-type: disc;">');
+                inList = true;
+            }
+            // Remove bullet prefix
+            let content = line.trim().replace(/^[\*\-\u2022]\s+/, "");
+            result.push(`<li style="margin-bottom: 0.25rem; line-height: 1.5;">${content}</li>`);
+        } 
+        // Regular line
+        else {
+            if (inList) {
+                result.push('</ul>');
+                inList = false;
+            }
+            
+            if (trimmed === '') {
+                result.push('<br>');
+            } else {
+                result.push(`<p style="margin: 0 0 0.5rem 0; line-height: 1.5;">${line}</p>`);
+            }
+        }
+    }
+    
+    if (inList) {
+        result.push('</ul>');
+    }
+    
+    return result.join('\n');
+}
+
 function addMessage(text, isUser) {
     const container = document.getElementById('chatMessages');
     const welcome = document.getElementById('chatWelcome');
@@ -24,7 +90,13 @@ function addMessage(text, isUser) {
     msg.className = 'message ' + (isUser ? 'user-message' : 'bot-message');
     const bubble = document.createElement('div');
     bubble.className = 'message-bubble';
-    bubble.textContent = text;
+    
+    if (isUser) {
+        bubble.textContent = text;
+    } else {
+        bubble.innerHTML = parseMarkdown(text);
+    }
+    
     msg.appendChild(bubble);
     container.appendChild(msg);
     scrollToBottom();
