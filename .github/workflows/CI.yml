@@ -3,9 +3,9 @@ name: Aarohi AI DevSecOps Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "KrishV" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "KrishV" ]
 
 permissions:
   contents: read
@@ -32,25 +32,22 @@ jobs:
       # -------------------------------------------------------------
       # SEC 2: BANDIT (Python Static Analysis)
       # -------------------------------------------------------------
-      - name: Set up Python Runtime
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-          
-      - name: Install Linting & Testing Dependencies
-        run: |
-          pip install bandit semgrep
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
-      # 0.1.1: Fixes vulnerabilities, misconfigurations, and standard bugs
-      - name: Run Bandit Security Analysis
-        run: bandit -r . -x ./testing -ll
+      - name: Run SonarQube Security & Quality Analysis
+        uses: sonarsource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       # -------------------------------------------------------------
-      # SEC 3: SEMGREP (SAST Analysis)
+      # SEC 3: SEMGREP (Framework Structural Validation)
       # -------------------------------------------------------------
       - name: Run Semgrep Code Audit
-        run: semgrep scan --config=auto --error
+        run: |
+          pip install semgrep
+          semgrep scan --config=auto --error
+
+      # 0.1.1: Fixes vulnerabilities, misconfigurations, and standard bugs
+    
 
   build-and-container-security:
     name: Container Build & Supply Chain Shielding
