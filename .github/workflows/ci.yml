@@ -123,7 +123,7 @@ jobs:
       # Trivy Filesystem Scan
       #################################################
       - name: Trivy Filesystem Scan
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@0.28.0
         with:
           scan-type: fs
           scan-ref: .
