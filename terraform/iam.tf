@@ -9,11 +9,11 @@ resource "aws_iam_role" "eks_cluster" {
       Effect = "Allow"
       Principal = {
         Service = "eks.amazonaws.com"
-      
+
       }
-    
-    }
-  ]
+
+      }
+    ]
   })
 }
 
@@ -32,7 +32,7 @@ resource "aws_iam_role" "eks_nodes" {
       Action = "sts:AssumeRole"
       Effect = "Allow"
       Principal = {
-        Service =  "ec2.amazonaws.com"
+        Service = "ec2.amazonaws.com"
       }
     }]
   })
