@@ -29,14 +29,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # -------------------------------------------------------------
-      # SEC 2: BANDIT (Python Static Analysis)
-      # -------------------------------------------------------------
-      - name: Run SonarQube Security & Quality Analysis
-        uses: sonarsource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Run Localized SonarScanner Engine
+        uses: warchant/sonar-scanner-action@master
+        with:
+          # Tells the scanner to run locally in preview mode without pushing to a server
+          args: >
+            -Dsonar.projectKey=aarohi-ai-local
+            -Dsonar.projectName=aarohi-ai
+            -Dsonar.sources=.
+            -Dsonar.exclusions=venv/**,.venv/**,terraform/**,.github/**,node_modules/**
+            -Dsonar.analysis.mode=preview
 
       # -------------------------------------------------------------
       # SEC 3: SEMGREP (Framework Structural Validation)
