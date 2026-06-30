@@ -84,14 +84,14 @@ jobs:
       - name: Scan Terraform & Kubernetes (Checkov)
         uses: bridgecrewio/checkov-action@master
         with:
-          skip_path: K8s
-          directory: aarohi-ai/
+          
+          directory: .
           framework: terraform,kubernetes
           quiet: true
           soft_fail: false
 
       - name: Trivy Filesystem Scan
-        uses: aquasecurity/setup-trivy@v0.2.6
+        uses: aquasecurity/trivy-action@v0.30.0
         with:
           version: v0.71.2 
           scan-type: fs
@@ -143,7 +143,7 @@ jobs:
             -t $REGISTRY/$ECR_REPOSITORY:latest .
 
       - name: Scan Docker Image (Trivy)
-        uses: aquasecurity/setup-trivy@v0.2.6
+        uses: aquasecurity/trivy-action@v0.30.0
         with:
           version: v0.71.2 
           image-ref: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
