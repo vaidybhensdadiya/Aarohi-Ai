@@ -23,7 +23,7 @@ mysql:
 # Flask Web Application Parameters
 webApp:
   image:
-    registry: 456051252825.dkr.ecr.us-west-1.amazonaws.com/aarohi-ai-web-app
+    registry: 456051252825.dkr.ecr.us-west-1.amazonaws.com
     repository: aarohi-ai-web-app
     tag: latest
 
