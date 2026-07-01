@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: aarohi-ai-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/vaidybhensdadiya/Aarohi-Ai.git'
+    targetRevision: KrishV
+    path: aarohi-ai
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: aarohi-ai
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+
