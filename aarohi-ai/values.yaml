@@ -22,7 +22,11 @@ mysql:
 
 # Flask Web Application Parameters
 webApp:
-  image: "coder122/aarohi-ai-web-app:v2"
+  image:
+    registry: 456051252825.dkr.ecr.us-west-1.amazonaws.com/aarohi-ai-web-app
+    repository: aarohi-ai-web-app
+    tag: latest
+
   imagePullPolicy: "Always"
   replicaCount: 2
   env:
