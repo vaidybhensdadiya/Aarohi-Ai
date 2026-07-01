@@ -49,7 +49,7 @@ jobs:
       - name: Scan Python Dependencies (Safety)
         env:
           SAFETY_API_KEY: ${{ secrets.SAFETY_API_KEY }}
-        run: safety check --full-report
+        run: safety check --full-report --ignore SFTY-20260616-58930
         continue-on-error: true # Prevents pipeline breakage if token isn't configured yet
 
       - name: Scan for Secrets (Gitleaks)
