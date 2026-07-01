@@ -91,7 +91,7 @@ jobs:
           soft_fail: false
 
       - name: Trivy Filesystem Scan
-        uses: aquasecurity/trivy-action@v0.29.0
+        uses: aquasecurity/trivy-action@v0.30.0
         with:
            
           scan-type: fs
@@ -100,6 +100,7 @@ jobs:
           severity: HIGH,CRITICAL
           exit-code: "1"
           ignore-unfixed: true
+          skip-setup-trivy: true
 
       - name: Pipeline Status
         run: |
@@ -142,7 +143,7 @@ jobs:
             -t $REGISTRY/$ECR_REPOSITORY:latest .
 
       - name: Scan Docker Image (Trivy)
-        uses: aquasecurity/trivy-action@v0.29.0
+        uses: aquasecurity/trivy-action@v0.30.0
         with:
            
           image-ref: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
@@ -150,6 +151,7 @@ jobs:
           severity: HIGH,CRITICAL
           exit-code: "1"
           ignore-unfixed: true
+          skip-setup-trivy: true
 
       - name: Generate SBOM
         uses: anchore/sbom-action@v0
