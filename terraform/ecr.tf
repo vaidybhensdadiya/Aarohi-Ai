@@ -5,6 +5,10 @@ resource "aws_ecr_repository" "web_app" {
   image_scanning_configuration {
     scan_on_push = true # Native AWS security scan on top of our pipeline scans
   }
+  # ADD THIS BLOCK TO FIX CKV_AWS_136
+  encryption_configuration {
+    encryption_type = "KMS"
+  }
 
   tags = {
     Name = "${var.project_name}-ecr"
