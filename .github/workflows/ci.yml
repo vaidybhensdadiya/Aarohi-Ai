@@ -100,7 +100,7 @@ jobs:
           severity: HIGH,CRITICAL
           exit-code: "1"
           ignore-unfixed: true
-          skip-setup-trivy: true
+          
 
       - name: Pipeline Status
         run: |
@@ -125,6 +125,7 @@ jobs:
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
+          role-session-name: GitHubActions
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -151,7 +152,7 @@ jobs:
           severity: HIGH,CRITICAL
           exit-code: "1"
           ignore-unfixed: true
-          skip-setup-trivy: true
+          
 
       - name: Generate SBOM
         uses: anchore/sbom-action@v0
