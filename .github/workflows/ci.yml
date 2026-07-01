@@ -223,4 +223,4 @@ jobs:
         run: |
           echo "Updating deployment target image tags with: ${IMAGE_TAG}"
           # Insert your structural yq file modification logic here 
-This is my pipeline 
+          This is my pipeline 
