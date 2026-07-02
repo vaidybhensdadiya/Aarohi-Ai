@@ -17,11 +17,12 @@ resource "aws_eks_cluster" "main" {
     endpoint_private_access = true
     endpoint_public_access  = true
   }
-   public_access_cidrs     = ["172.31.0.0/16"]
+   
 
   # Ensures IAM roles and policies are fully active on AWS BEFORE the cluster starts provisioning
   depends_on = [
     aws_iam_role_policy_attachment.eks_cluster_policy
   ]
 }
+
 

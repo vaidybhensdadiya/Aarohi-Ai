@@ -1,7 +1,7 @@
 resource "aws_ecr_repository" "web_app" {
   name                 = "${var.project_name}-web-app"
   image_tag_mutability = "MUTABLE"
-
+  force_delete = true
   image_scanning_configuration {
     scan_on_push = true # Native AWS security scan on top of our pipeline scans
   }

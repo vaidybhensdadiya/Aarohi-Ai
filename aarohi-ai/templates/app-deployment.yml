@@ -20,7 +20,7 @@ spec:
         fsGroup: 10001
       containers:
       - name: web-app
-        image: "{{ .Values.webApp.image.registry }}/{{ .Values.webApp.image.repository }}:{{ .Values.webApp.image.tag }}"
+        image: "{{ .Values.webApp.image.repository }}:{{ .Values.webApp.image.tag }}"
         imagePullPolicy: {{ .Values.webApp.imagePullPolicy }}
         # 💡 Container-level security context disabling privilege escalation
         securityContext:
