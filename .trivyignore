@@ -1,0 +1,3 @@
+# Ignore temporary path traversal flaw in NLTK until a patch is released
+PYSEC-2026-597
+
