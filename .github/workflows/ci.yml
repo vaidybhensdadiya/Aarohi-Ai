@@ -1,4 +1,4 @@
-name: DevSecOps - End to End Pipeline
+name: DevSecOps Development Pipeline
 
 on:
   push:
@@ -11,155 +11,158 @@ on:
 permissions:
   contents: write
   security-events: write
-  id-token: write
 
 env:
-  AWS_REGION: us-west-1
-  ECR_REPOSITORY: aarohi-ai-web-app
+  IMAGE_NAME: coder122/aarohi-ai-web-app
+
+###############################################################
+# STAGE 1 - DEVSECOPS
+###############################################################
 
 jobs:
-  #############################################################################
-  # STAGE 1: Code Quality & DevSecOps (Originally ci.yml)
-  #############################################################################
+
   security_ci:
+
     name: Code Security & Validation
+
     runs-on: ubuntu-latest
+
     steps:
+
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      ######################################################
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Install Project Dependencies
+      ######################################################
+
+      - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
+
           if [ -f requirements.txt ]; then
             pip install -r requirements.txt
           fi
 
-      - name: Install Security Tools
-        run: |
-          pip install pip-audit safety
+          pip install safety pip-audit
 
-      - name: Scan Python Dependencies (Safety)
+      ######################################################
+
+      - name: Safety Scan
         env:
           SAFETY_API_KEY: ${{ secrets.SAFETY_API_KEY }}
-        run: safety check --full-report --ignore SFTY-20260616-58930
-        continue-on-error: true # Prevents pipeline breakage if token isn't configured yet
+        run: |
+          safety check \
+          --full-report \
+          --ignore SFTY-20260616-58930
+        continue-on-error: true
 
-      - name: Scan for Secrets (Gitleaks)
+      ######################################################
+
+      - name: Scan Secrets
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Scan Python Dependencies (pip-audit)
-        run: |
-          pip-audit
+      ######################################################
 
-      - name: Lint Dockerfile
+      - name: Python Dependency Scan
+        run: pip-audit
+
+      ######################################################
+
+      - name: Dockerfile Lint
         uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: Dockerfile
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+      ######################################################
 
-      - name: Terraform Format
-        working-directory: terraform
-        run: terraform fmt -check -recursive
-
-      - name: Terraform Init
-        working-directory: terraform
-        run: terraform init
-
-      - name: Terraform Validate
-        working-directory: terraform
-        run: terraform validate
-
-      - name: Scan Terraform & Kubernetes (Checkov)
+      - name: Kubernetes Scan
         uses: bridgecrewio/checkov-action@master
         with:
-          
           directory: .
-          framework: terraform,kubernetes
+          framework: kubernetes
           quiet: true
           soft_fail: false
 
-      - name: Trivy Filesystem Scan
-        uses: aquasecurity/setup-trivy@v0.2.6
+      ######################################################
+
+      - name: Filesystem Scan
+        uses: aquasecurity/trivy-action@0.31.0
         with:
-           
           scan-type: fs
           scan-ref: .
           format: table
           severity: HIGH,CRITICAL
           exit-code: "1"
           ignore-unfixed: true
-          
 
-      - name: Pipeline Status
-        run: |
-          echo "========================================="
-          echo "CI Security Pipeline Completed"
-          echo "Repository is ready for Docker Build."
-          echo "========================================="
+###############################################################
+# STAGE 2 - BUILD
+###############################################################
 
-  #############################################################################
-  # STAGE 2: Image Build, Scan & Push (Originally image.yml)
-  #############################################################################
   image_build:
-    name: Image Build, Scan & Push
+
+    name: Build Scan Sign Push
+
     runs-on: ubuntu-latest
-    needs: security_ci # <-- Sequence Link: Must execute after CI passes
+
+    needs: security_ci
+
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - uses: actions/checkout@v4
+
+      ######################################################
+
+      - name: Login DockerHub
+        uses: docker/login-action@v3
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ env.AWS_REGION }}
-          role-session-name: GitHubActions
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+      ######################################################
 
-      - name: Set up Docker Buildx
+      - name: Setup Buildx
         uses: docker/setup-buildx-action@v3
 
+      ######################################################
+
       - name: Build Docker Image
-        env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build \
-            -t $REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
-            -t $REGISTRY/$ECR_REPOSITORY:latest .
+          -t $IMAGE_NAME:${{ github.sha }} \
+          -t $IMAGE_NAME:latest .
 
-      - name: Scan Docker Image (Trivy)
-        uses: aquasecurity/setup-trivy@v0.2.6
+      ######################################################
+
+      - name: Scan Docker Image
+        uses: aquasecurity/trivy-action@0.31.0
         with:
-           
-          image-ref: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+          image-ref: ${{ env.IMAGE_NAME }}:${{ github.sha }}
           format: table
           severity: HIGH,CRITICAL
           exit-code: "1"
           ignore-unfixed: true
-          
+
+      ######################################################
 
       - name: Generate SBOM
         uses: anchore/sbom-action@v0
         with:
-          image: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+          image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
           output-file: sbom.spdx.json
           format: spdx-json
+
+      ######################################################
 
       - name: Upload SBOM
         uses: actions/upload-artifact@v4
@@ -167,63 +170,85 @@ jobs:
           name: sbom
           path: sbom.spdx.json
 
-      - name: Push Docker Images
-        env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
+      ######################################################
+
+      - name: Push Image
         run: |
-          docker push $REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker push $REGISTRY/$ECR_REPOSITORY:latest
+          docker push $IMAGE_NAME:${{ github.sha }}
+          docker push $IMAGE_NAME:latest
+
+      ######################################################
 
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3
 
-      - name: Sign Image
+      ######################################################
+
+      - name: Sign Docker Image
         env:
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           echo "$COSIGN_PRIVATE_KEY" > cosign.key
+
           cosign sign \
-            --key cosign.key \
-            $REGISTRY/$ECR_REPOSITORY:${{ github.sha }} \
-            -y
+          --key cosign.key \
+          $IMAGE_NAME:${{ github.sha }} \
+          -y
 
-      - name: Build Complete
-        run: |
-          echo "========================================="
-          echo "Docker Build Completed"
-          echo "Image Scanned Successfully"
-          echo "SBOM Generated"
-          echo "Image Signed"
-          echo "Image Pushed to Amazon ECR"
-          echo "========================================="
+###############################################################
+# STAGE 3 - GITOPS
+###############################################################
 
-  #############################################################################
-  # STAGE 3: GitOps Deployment (Originally deploy.yml)
-  #############################################################################
   deployment:
+
     name: GitOps Deployment
+
     runs-on: ubuntu-latest
-    needs: image_build # <-- Sequence Link: Must execute after image compilation passes
-    env:
-      IMAGE_TAG: ${{ github.sha }}
+
+    needs: image_build
+
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
         with:
-          ref: KrishV
           token: ${{ secrets.GITHUB_TOKEN }}
+          ref: KrishV
+
+      ######################################################
 
       - name: Install yq
         run: |
-          sudo wget -qO /usr/local/bin/yq https://github.com
-          sudo chmod +x /usr/local/bin/yq
-          yq --version
+          sudo wget -qO /usr/local/bin/yq \
+          https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
 
-      - name: Update manifest tag
+          sudo chmod +x /usr/local/bin/yq
+
+      ######################################################
+
+      - name: Update Helm Image Tag
         run: |
-          echo "Updating deployment target image tags with: ${IMAGE_TAG}"
-          # Insert your structural yq file modification logic here 
-          This is my pipeline 
+
+          yq -i '
+
+          .image.repository = "coder122/aarohi-ai-web-app" |
+
+          .image.tag = "${{ github.sha }}"
+
+          ' aarohi-ai/values.yaml
+
+      ######################################################
+
+      - name: Commit Changes
+
+        run: |
+
+          git config --global user.name "github-actions"
+
+          git config --global user.email "github-actions@github.com"
+
+          git add aarohi-ai/values.yaml
+
+          git commit -m "Update Image Tag to ${{ github.sha }}" || echo "No changes"
+
+          git push
