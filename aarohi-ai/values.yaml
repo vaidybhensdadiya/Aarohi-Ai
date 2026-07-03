@@ -23,8 +23,8 @@ mysql:
 # Flask Web Application Parameters
 webApp:
   image:
-    repository: coder122/aarohi-ai-web-app
-    tag: latest
+    repository: "coder122/aarohi-ai-web-app"
+    tag: "v2"
 
   imagePullPolicy: "Always"
   replicaCount: 2
@@ -43,6 +43,6 @@ webApp:
   hpa:
     enabled: true
     minReplicas: 2
-    maxReplicas: 3
+    maxReplicas: 2
     targetCPUUtilization: 70
 
