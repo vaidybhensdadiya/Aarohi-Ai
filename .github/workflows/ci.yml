@@ -52,6 +52,8 @@ jobs:
           fi
 
           pip install safety pip-audit
+          
+          pip-audit --ignore-vuln PYSEC-2026-597
 
       ######################################################
 
