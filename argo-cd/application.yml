@@ -1,20 +1,32 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
+
 metadata:
   name: aarohi-ai-app
   namespace: argocd
+  metadata:
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: webapp=coder122/aarohi-ai-web-app
+    argocd-image-updater.argoproj.io/webapp.helm.image-name: webApp.image.repository
+    argocd-image-updater.argoproj.io/webapp.helm.image-tag: webApp.image.tag
+    argocd-image-updater.argoproj.io/write-back-method: git
+    argocd-image-updater.argoproj.io/git-branch: KrishV
+
 spec:
   project: default
+
   source:
-    repoURL: 'https://github.com/vaidybhensdadiya/Aarohi-Ai.git'
+    repoURL: https://github.com/vaidybhensdadiya/Aarohi-Ai.git
     targetRevision: KrishV
     path: aarohi-ai
     helm:
       valueFiles:
         - values.yaml
+
   destination:
-    server: 'https://kubernetes.default.svc'
+    server: https://kubernetes.default.svc
     namespace: aarohi-ai
+
   syncPolicy:
     automated:
       prune: true
