@@ -1,3 +1,7 @@
 # Ignore temporary path traversal flaw in NLTK until a patch is released
 PYSEC-2026-597
+# Ignore Python build-tool vulnerabilities in pipeline
+CVE-2026-23949
+CVE-2026-24049
+
 
