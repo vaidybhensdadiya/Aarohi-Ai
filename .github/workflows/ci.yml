@@ -177,22 +177,21 @@ jobs:
       - name: Build Docker Image
         run: |
           docker build \
-          -t $IMAGE_NAME:${{ github.sha }} \
-          -t $IMAGE_NAME:latest .
+          -t ${{ env.IMAGE_NAME }}:${{ github.sha }} \
+          -t ${{ env.IMAGE_NAME }}:latest .
 
       ######################################################
-      - name: Install Trivy for Image Scan
-        uses:  aquasecurity/trivy-action@v0.36.0
-        with:
-          cache: true
 
+      # FIXED: Combined initialization and scanning using the official action execution format
       - name: Trivy Image Scan
-        run: |
-         trivy image \
-         --severity HIGH,CRITICAL \
-         --ignore-unfixed \
-         --exit-code 1 \
-         $IMAGE_NAME:${{ github.sha }}
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          scan-type: 'image'
+          image-ref: '${{ env.IMAGE_NAME }}:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: 'HIGH,CRITICAL'
 
       ######################################################
 
@@ -215,8 +214,8 @@ jobs:
 
       - name: Push Image
         run: |
-          docker push $IMAGE_NAME:${{ github.sha }}
-          docker push $IMAGE_NAME:latest
+          docker push ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker push ${{ env.IMAGE_NAME }}:latest
 
       ######################################################
 
@@ -234,7 +233,7 @@ jobs:
 
           cosign sign \
           --key cosign.key \
-          $IMAGE_NAME:${{ github.sha }} \
+          ${{ env.IMAGE_NAME }}:${{ github.sha }} \
           -y
 
 ###############################################################
