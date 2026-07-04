@@ -182,7 +182,7 @@ jobs:
 
       ######################################################
       - name: Install Trivy for Image Scan
-        uses: aquasecurity/setup-trivy@v0.2.0
+        uses:  aquasecurity/trivy-action@v0.36.0
         with:
           cache: true
 
