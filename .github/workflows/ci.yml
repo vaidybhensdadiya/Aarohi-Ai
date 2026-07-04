@@ -40,6 +40,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          
+      - name: Install Trivy
+        run: |
+         sudo apt-get update
+         sudo apt-get install -y wget
+         wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.63.0_Linux-64bit.deb
+         sudo dpkg -i trivy_0.63.0_Linux-64bit.deb
 
       ######################################################
 
@@ -117,15 +124,13 @@ jobs:
 
       ######################################################
 
-      - name: Filesystem Scan
-        uses: aquasecurity/trivy-action@0.33.1
-        with:
-          scan-type: fs
-          scan-ref: .
-          format: table
-          severity: HIGH,CRITICAL
-          exit-code: "1"
-          ignore-unfixed: true
+      - name: Trivy Filesystem Scan
+        run: |
+         trivy fs \
+         --severity HIGH,CRITICAL \
+         --ignore-unfixed \
+         --exit-code 1 \
+          .
 
 ###############################################################
 # STAGE 2 - BUILD
@@ -166,14 +171,13 @@ jobs:
 
       ######################################################
 
-      - name: Scan Docker Image
-        uses: aquasecurity/trivy-action@0.33.1
-        with:
-          image-ref: ${{ env.IMAGE_NAME }}:${{ github.sha }}
-          format: table
-          severity: HIGH,CRITICAL
-          exit-code: "1"
-          ignore-unfixed: true
+      - name: Trivy Image Scan
+        run: |
+         trivy image \
+         --severity HIGH,CRITICAL \
+         --ignore-unfixed \
+         --exit-code 1 \
+         $IMAGE_NAME:${{ github.sha }}
 
       ######################################################
 
