@@ -271,9 +271,9 @@ jobs:
 
           yq -i '
 
-          .image.repository = "coder122/aarohi-ai-web-app" |
+          .webApp.image.repository = "coder122/aarohi-ai-web-app" |
 
-          .image.tag = "${{ github.sha }}"
+          webApp.image.tag = "${{ github.sha }}"
 
           ' aarohi-ai/values.yaml
 
