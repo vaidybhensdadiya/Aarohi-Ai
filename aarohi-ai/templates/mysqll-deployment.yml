@@ -5,6 +5,8 @@ metadata:
   namespace: {{ .Values.global.namespace }}
 spec:
   replicas: {{ .Values.mysql.replicaCount }}
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: mysql

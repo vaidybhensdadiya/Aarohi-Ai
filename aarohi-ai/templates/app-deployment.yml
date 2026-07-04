@@ -5,6 +5,7 @@ metadata:
   namespace: {{ .Values.global.namespace }}
 spec:
   replicas: {{ .Values.webApp.replicaCount }}
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       app: aarohi-web
