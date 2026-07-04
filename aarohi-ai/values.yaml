@@ -1,6 +1,5 @@
 global:
   namespace: aarohi-ai
-
 # Database Parameters
 mysql:
   image: "mysql:8.0"
@@ -18,21 +17,18 @@ mysql:
     dbUser: "aarohi_user"
     dbPort: "3306"
     # In a real pipeline, passwords should be injected via a secret provider or CLI
-    dbPasswordBase64: "YWFyb2hpX3Bhc3N3b3Jk" 
-
+    dbPasswordBase64: "YWFyb2hpX3Bhc3N3b3Jk"
 # Flask Web Application Parameters
 webApp:
   image:
     repository: "coder122/aarohi-ai-web-app"
     tag: "v2"
-
   imagePullPolicy: "Always"
   replicaCount: 2
   env:
-    flaskDebug: "false"     # Turn off in production to prevent source code exposure on error
+    flaskDebug: "false" # Turn off in production to prevent source code exposure on error
     flaskHost: "0.0.0.0"
     flaskPort: "5000"
-
   resources:
     requests:
       memory: "128Mi"
@@ -45,4 +41,6 @@ webApp:
     minReplicas: 2
     maxReplicas: 2
     targetCPUUtilization: 70
-
+image:
+  repository: coder122/aarohi-ai-web-app
+  tag: 083c2e6c62bb113ed43638c8b083b1c327cdc712
