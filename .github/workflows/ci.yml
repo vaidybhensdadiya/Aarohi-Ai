@@ -181,6 +181,10 @@ jobs:
           -t $IMAGE_NAME:latest .
 
       ######################################################
+      - name: Install Trivy for Image Scan
+        uses: aquasecurity/setup-trivy@v0.2.0
+        with:
+          cache: true
 
       - name: Trivy Image Scan
         run: |
