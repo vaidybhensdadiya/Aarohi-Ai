@@ -41,4 +41,6 @@ webApp:
     minReplicas: 2
     maxReplicas: 2
     targetCPUUtilization: 70
-
+image:
+  repository: coder122/aarohi-ai-web-app
+  tag: 94049ec5cc1c550c1239c93e58625a7af7af4e08
