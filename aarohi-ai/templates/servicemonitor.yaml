@@ -1,0 +1,22 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+
+metadata:
+  name: aarohi-ai-monitor
+  namespace: monitoring
+  labels:
+    Release: monitoring
+
+spec:
+  namespaceSelector:
+    matchNames:
+      - aarohi-ai
+
+  selector:
+    matchLabels:
+      app: aarohi-web
+
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
