@@ -7,11 +7,13 @@ import joblib
 # -----------------------------
 # DATABASE CONNECTION
 # -----------------------------
+
 conn = pymysql.connect(
-    host="localhost",
-    user="root",
-    password="Vaidy@2005",
-    database="aarohi_ai"
+    host=Config.DB_HOST,
+    port=Config.DB_PORT,
+    user=Config.DB_USER,
+    password=Config.DB_PASSWORD,
+    database=Config.DB_NAME
 )
 
 query = "SELECT * FROM period_records"

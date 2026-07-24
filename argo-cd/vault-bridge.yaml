@@ -1,0 +1,26 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ClusterSecretStore
+metadata:
+  name: vault-backend
+spec:
+  provider:
+    vault:
+      # Updated cleaner endpoint for Kind clusters
+      server: "http://vault.svc"
+      path: "secret"
+      version: "v2"
+      auth:
+        tokenSecretRef:
+          name: vault-token-secret
+          key: token
+          namespace: external-secrets
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: vault-token-secret
+  namespace: external-secrets
+type: Opaque
+stringData:
+  token: "root-token-123"
+
