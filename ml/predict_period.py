@@ -1,8 +1,13 @@
 import os
+import sys
 import pymysql
 import joblib
 import pandas as pd
 from datetime import timedelta, datetime
+
+# Allow importing config from parent directory
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from config import Config
 
 
 # Load trained model
@@ -35,10 +40,11 @@ def predict_from_inputs(last_period_date_str):
 
 def predict_next_period(user_id):
     conn = pymysql.connect(
-        host="localhost",
-        user="root",
-        password="Vaidy@2005",
-        database="aarohi_ai"
+        host=Config.DB_HOST,
+        user=Config.DB_USER,
+        password=Config.DB_PASSWORD,
+        database=Config.DB_NAME,
+        port=Config.DB_PORT
     )
 
     query = """

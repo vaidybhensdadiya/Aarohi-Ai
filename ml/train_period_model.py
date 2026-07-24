@@ -4,20 +4,28 @@ from datetime import timedelta
 from sklearn.linear_model import LinearRegression
 import joblib
 
+import sys
+import os
+
+# Allow importing config from parent directory
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from config import Config
+
 # -----------------------------
 # DATABASE CONNECTION
 # -----------------------------
 conn = pymysql.connect(
-    host="localhost",
-    user="root",
-    password="Vaidy@2005",
-    database="aarohi_ai"
+    host=Config.DB_HOST,
+    user=Config.DB_USER,
+    password=Config.DB_PASSWORD,
+    database=Config.DB_NAME,
+    port=Config.DB_PORT
 )
 
 query = "SELECT * FROM period_records"
 df = pd.read_sql(query, conn)
 
-print("🔎 Raw rows:", len(df))
+print("[INFO] Raw rows:", len(df))
 
 # -----------------------------
 # REMOVE HEADER-LIKE ROWS
@@ -44,10 +52,10 @@ df = df[
 
 df = df.dropna(subset=["cycle_length", "period_start_date"])
 
-print("✅ Clean rows used for training:", len(df))
+print("[INFO] Clean rows used for training:", len(df))
 
 if len(df) < 10:
-    print("❌ Not enough clean data to train model")
+    print("[ERROR] Not enough clean data to train model")
     exit()
 
 # -----------------------------
@@ -69,4 +77,4 @@ model.fit(X, y)
 # -----------------------------
 joblib.dump(model, "ml/period_cycle_model.pkl")
 
-print("🎉 Model trained and saved successfully!")
+print("[SUCCESS] Model trained and saved successfully!")
