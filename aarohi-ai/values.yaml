@@ -22,7 +22,7 @@ mysql:
 webApp:
   image:
     repository: coder122/aarohi-ai-web-app
-    tag: 8036472c0cc118d740fc232b45ffe4b48fa81632
+    tag: 14311ad983a53d6fa0321e7ad222deca08faf6e4
   imagePullPolicy: "Always"
   replicaCount: 2
   env:
