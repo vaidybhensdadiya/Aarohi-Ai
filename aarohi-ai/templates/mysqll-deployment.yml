@@ -35,16 +35,21 @@ spec:
           limits:
             memory: {{ .Values.mysql.resources.limits.memory | quote }}
             cpu: {{ .Values.mysql.resources.limits.cpu | quote }}
-        readinessProbe:
-          exec:
-            command: ["mysqladmin", "ping", "-h", "localhost"]
-          initialDelaySeconds: 15
-          periodSeconds: 5
         livenessProbe:
-          exec:
-            command: ["mysqladmin", "ping", "-h", "localhost"]
+          tcpSocket:
+            port: 3306
           initialDelaySeconds: 30
           periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+
         env:
         - name: MYSQL_DATABASE
           valueFrom:
