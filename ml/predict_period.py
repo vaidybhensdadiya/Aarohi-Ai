@@ -35,10 +35,10 @@ def predict_from_inputs(last_period_date_str):
 
 def predict_next_period(user_id):
     conn = pymysql.connect(
-        host="localhost",
+        host="localho",
         user="root",
-        password="Vaidy@2005",
-        database="aarohi_ai"
+        password="krish143",
+        database="aaroh"
     )
 
     query = """
