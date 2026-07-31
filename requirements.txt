@@ -34,3 +34,7 @@ prometheus_client
 # =======================================================
 setuptools>=78.1.1
 msgpack>=1.2.1
+
+# Security Patches
+setuptools>=78.1.1
+msgpack>=1.2.1
