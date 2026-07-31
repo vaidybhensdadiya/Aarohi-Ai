@@ -29,3 +29,8 @@ nltk==3.10.0
 requests==2.33.0
 python-dateutil==2.9.0.post0
 prometheus_client
+# =======================================================
+# Security Patches (Overrides hidden/base image vulns)
+# =======================================================
+setuptools>=78.1.1
+msgpack>=1.2.1
