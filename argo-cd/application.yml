@@ -6,13 +6,21 @@ metadata:
   namespace: argocd
   metadata:
   annotations:
+    # Track the repository
     argocd-image-updater.argoproj.io/image-list: webapp=coder122/aarohi-ai-web-app
+    
+    # Map the new tag data directly to your Helm parameters
     argocd-image-updater.argoproj.io/webapp.helm.image-name: webApp.image.repository
     argocd-image-updater.argoproj.io/webapp.helm.image-tag: webApp.image.tag
-    argocd-image-updater.argoproj.io/write-back-method: git
-    argocd-image-updater.argoproj.io/git-branch: KrishV
+    
+    # Strategy parameters
     argocd-image-updater.argoproj.io/update-strategy: latest
-    argocd-image-updater.argoproj.io/write-back-method: git:argocd
+    
+    # EXCLUSIVELY USE GIT WRITE-BACK (Fixed here)
+    argocd-image-updater.argoproj.io/write-back-method: git
+    
+    # Target branch for the automated commit
+    argocd-image-updater.argoproj.io/git-branch: KrishV
 
 
 spec:
